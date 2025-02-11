@@ -1,0 +1,165 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\mouad.khalladi\\cyrscan-frontend\\package.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:package.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\index.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\index.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\mouad.khalladi\\cyrscan-frontend\\craco.config.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:craco.config.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\tailwind.config.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\tailwind.config.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\App.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\App.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\index.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\index.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\App.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\App.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\reportWebVitals.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\reportWebVitals.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\App.test.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\App.test.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 5,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "craco.config.js",
+              "DocumentMoniker": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\craco.config.js",
+              "RelativeDocumentMoniker": "craco.config.js",
+              "ToolTip": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\craco.config.js",
+              "RelativeToolTip": "craco.config.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-02-11T15:12:43.287Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "index.js",
+              "DocumentMoniker": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\index.js",
+              "RelativeDocumentMoniker": "src\\index.js",
+              "ToolTip": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\index.js",
+              "RelativeToolTip": "src\\index.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-02-11T14:58:34.744Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "tailwind.config.js",
+              "DocumentMoniker": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\tailwind.config.js",
+              "RelativeDocumentMoniker": "src\\tailwind.config.js",
+              "ToolTip": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\tailwind.config.js",
+              "RelativeToolTip": "src\\tailwind.config.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-02-11T14:58:12.897Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "index.css",
+              "DocumentMoniker": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\index.css",
+              "RelativeDocumentMoniker": "src\\index.css",
+              "ToolTip": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\index.css",
+              "RelativeToolTip": "src\\index.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-02-11T14:57:07.097Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "App.test.js",
+              "DocumentMoniker": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\App.test.js",
+              "RelativeDocumentMoniker": "src\\App.test.js",
+              "ToolTip": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\App.test.js",
+              "RelativeToolTip": "src\\App.test.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-02-11T14:53:40.004Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "package.json",
+              "DocumentMoniker": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\package.json",
+              "RelativeDocumentMoniker": "package.json",
+              "ToolTip": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\package.json",
+              "RelativeToolTip": "package.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAC0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-02-11T14:32:10.495Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "reportWebVitals.js",
+              "DocumentMoniker": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\reportWebVitals.js",
+              "RelativeDocumentMoniker": "src\\reportWebVitals.js",
+              "ToolTip": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\reportWebVitals.js",
+              "RelativeToolTip": "src\\reportWebVitals.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-02-11T14:17:15.039Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "App.css",
+              "DocumentMoniker": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\App.css",
+              "RelativeDocumentMoniker": "src\\App.css",
+              "ToolTip": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\App.css",
+              "RelativeToolTip": "src\\App.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-02-10T23:35:01.021Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "App.js",
+              "DocumentMoniker": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\App.js",
+              "RelativeDocumentMoniker": "src\\App.js",
+              "ToolTip": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\App.js",
+              "RelativeToolTip": "src\\App.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAHYAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-02-10T23:34:35.852Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
