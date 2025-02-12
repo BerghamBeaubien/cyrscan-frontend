@@ -1,5 +1,6 @@
 import React from 'react';
 import Dashboard from './Dashboard';  // Make sure Dashboard.js is in the same directory
+import './index.css';
 
 function App() {
     return (

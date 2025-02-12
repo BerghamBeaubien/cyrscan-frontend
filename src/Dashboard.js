@@ -76,68 +76,55 @@ const Dashboard = () => {
         return () => clearInterval(interval);
     }, []);
 
-    const handleSearchChange = (e) => {
-        setSearchTerm(e.target.value);
-    };
+    //const handleSearchChange = (e) => {
+    //    setSearchTerm(e.target.value);
+    //};
 
-    const handleKeyDown = (e) => {
-        if (e.key === 'Enter') {
-            const jobNumber = parseInt(searchTerm);
-            if (!isNaN(jobNumber)) {
-                fetchJobDetails(jobNumber);
-            }
-        }
-    };
+    //const handleKeyDown = (e) => {
+    //    if (e.key === 'Enter') {
+    //        const jobNumber = parseInt(searchTerm);
+    //        if (!isNaN(jobNumber)) {
+    //            fetchJobDetails(jobNumber);
+    //        }
+    //    }
+    //};
 
 
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="text-xl">Loading dashboard...</div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="text-xl text-red-600">Error: {error}</div>
-            </div>
-        );
-    }
+    if (loading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    if (error) return <div className="text-red-600 text-center">Error: {error}</div>;
 
     return (
-        <div className="p-6 max-w-7xl mx-auto flex flex-col items-center">
+        <div className="p-6 max-w-7xl mx-auto">
             {/* Stats Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 w-full">
-                <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-                    <h3 className="text-gray-500 text-sm font-medium">Total Jobs</h3>
-                    <p className="text-3xl font-bold mt-2">{stats?.TotalJobs || 0}</p>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-                    <h3 className="text-gray-500 text-sm font-medium">Scanned Items</h3>
-                    <p className="text-3xl font-bold mt-2">{stats?.TotalScannedItems || 0}</p>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-                    <h3 className="text-gray-500 text-sm font-medium">Unique Parts</h3>
-                    <p className="text-3xl font-bold mt-2">{stats?.TotalUniqueParts || 0}</p>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-                    <h3 className="text-gray-500 text-sm font-medium">Latest Job</h3>
-                    <p className="text-3xl font-bold mt-2">{stats?.LatestJob || '-'}</p>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 place-items-center mb-8">
+                {[
+                    { label: 'Total Jobs', value: stats?.TotalJobs || 0 },
+                    { label: 'Scanned Items', value: stats?.TotalScannedItems || 0 },
+                    { label: 'Unique Parts', value: stats?.TotalUniqueParts || 0 },
+                    { label: 'Latest Job', value: stats?.LatestJob || '-' }
+                ].map((item, index) => (
+                    <div key={index} className="bg-white p-6 rounded-lg shadow-lg text-center w-56">
+                        <h3 className="text-gray-500 text-sm font-medium">{item.label}</h3>
+                        <p className="text-3xl font-bold mt-2">{item.value}</p>
+                    </div>
+                ))}
             </div>
 
             {/* Search Bar */}
-            <div className="mb-8 w-full max-w-2xl relative">
+            <div className="mb-8 max-w-2xl mx-auto relative">
                 <Search className="absolute left-3 top-3 text-gray-400" size={20} />
                 <input
                     type="text"
                     placeholder="Search by job number..."
-                    className="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
                     value={searchTerm}
-                    onChange={handleSearchChange}
-                    onKeyDown={handleKeyDown}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            const jobNumber = parseInt(searchTerm);
+                            if (!isNaN(jobNumber)) fetchJobDetails(jobNumber);
+                        }
+                    }}
                 />
             </div>
 
@@ -163,18 +150,27 @@ const Dashboard = () => {
                     <table className="w-full">
                         <thead className="bg-gray-50">
                             <tr>
-                                <th width="200" className="px-6 py-4 text-center text-sm font-medium text-gray-700 uppercase">Part ID</th>
-                                <th width="80" className="px-6 py-4 text-center text-sm font-medium text-gray-700 uppercase">Quantity</th>
-                                <th width="80" className="px-6 py-4 text-center text-sm font-medium text-gray-700 uppercase">Scanned</th>
-                                <th width="180" className="px-6 py-4 text-center text-sm font-medium text-gray-700 uppercase">Scan Date</th>
+                                <th width="200" className="px-6 py-4 text-center-custom text-sm font-medium text-gray-700 uppercase">Part ID</th>
+                                <th width="80" className="px-6 py-4 text-center-custom text-sm font-medium text-gray-700 uppercase">Quantity</th>
+                                <th width="80" className="px-6 py-4 text-center-custom text-sm font-medium text-gray-700 uppercase">Scanned</th>
+                                <th width="180" className="px-6 py-4 text-center-custom text-sm font-medium text-gray-700 uppercase">Scan Date</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
                             {selectedJobDetails.map((detail, index) => (
                                 <tr key={index}>
-                                    <td className="px-6 py-4 text-center text-sm">{detail.partID}</td>
-                                    <td className="px-6 py-4 text-center text-sm">{detail.quantity}</td>
-                                    <td className="px-6 py-4 text-center text-sm">{detail.scannedQuantity}</td>
+                                    <td className="px-6 py-4 text-center-custom text-sm">{detail.partID}</td>
+                                    <td className="px-6 py-4 text-center-custom text-sm">{detail.quantity}</td>
+                                    <td
+                                        className={`px-6 py-4 text-left text-sm font-bold ${detail.scannedQuantity < detail.quantity
+                                                ? 'text-yellow-500'
+                                                : detail.scannedQuantity > detail.quantity
+                                                    ? 'text-red-500'
+                                                    : 'text-green-500'
+                                            }`}
+                                    >
+                                        {detail.scannedQuantity}
+                                    </td>
                                     <td className="px-6 py-4 text-center text-sm">
                                         {new Date(detail.scanDate).toLocaleString()}
                                     </td>
