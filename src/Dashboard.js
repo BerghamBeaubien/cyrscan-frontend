@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { Search } from 'lucide-react';
 
@@ -25,16 +25,16 @@ const Dashboard = () => {
                 throw new Error(`HTTP error! Jobs: ${jobsResponse.status}, Stats: ${statsResponse.status}`);
             }
 
-            const jobsData = await jobsResponse.json();
+            const jobs = await jobsResponse.json();
             const statsData = await statsResponse.json();
 
-            console.log("Jobs re�us :", jobsData);
-            console.log("Stats re�ues :", statsData);
+            console.log("Jobs dans l'état:", jobs);
+            console.log("Stats reçues :", statsData);
 
-            setJobs(jobsData);
+            setJobs(jobs);
             setStats(statsData);
         } catch (error) {
-            console.error('Erreur de r�cup�ration des donn�es:', error);
+            console.error('Erreur de récupération des données:', error);
             setError(error.message);
         } finally {
             setLoading(false);
@@ -61,7 +61,7 @@ const Dashboard = () => {
                 totalScanned: detailsData.reduce((sum, item) => sum + item.scannedQuantity, 0),
                 lastScanDate: detailsData[0]?.scanDate
             }]);
-            console.error("D�tails du job re�us :", detailsData[0].partID);
+            console.log("Détails du job reçus :", detailsData[0].partID);
         } catch (error) {
             console.error('Error fetching job details:', error);
             setError(error.message);
@@ -76,32 +76,18 @@ const Dashboard = () => {
         return () => clearInterval(interval);
     }, []);
 
-    //const handleSearchChange = (e) => {
-    //    setSearchTerm(e.target.value);
-    //};
-
-    //const handleKeyDown = (e) => {
-    //    if (e.key === 'Enter') {
-    //        const jobNumber = parseInt(searchTerm);
-    //        if (!isNaN(jobNumber)) {
-    //            fetchJobDetails(jobNumber);
-    //        }
-    //    }
-    //};
-
-
     if (loading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
     if (error) return <div className="text-red-600 text-center">Error: {error}</div>;
 
     return (
         <div className="p-6 max-w-7xl mx-auto">
             {/* Stats Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 place-items-center mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 place-items-center mb-8">
                 {[
-                    { label: 'Total Jobs', value: stats?.TotalJobs || 0 },
-                    { label: 'Scanned Items', value: stats?.TotalScannedItems || 0 },
-                    { label: 'Unique Parts', value: stats?.TotalUniqueParts || 0 },
-                    { label: 'Latest Job', value: stats?.LatestJob || '-' }
+                    { label: 'Total des Commandes', value: stats?.TotalJobs || 0 },
+                    { label: 'Étiquettes Scannées', value: stats?.TotalScannedItems || 0 },
+                    //{ label: 'Unique Parts', value: stats?.TotalUniqueParts || 0 },
+                    { label: 'Dernière Commande', value: stats?.LatestJob || '-' }
                 ].map((item, index) => (
                     <div key={index} className="bg-white p-6 rounded-lg shadow-lg text-center w-56">
                         <h3 className="text-gray-500 text-sm font-medium">{item.label}</h3>
@@ -115,7 +101,7 @@ const Dashboard = () => {
                 <Search className="absolute left-3 top-3 text-gray-400" size={20} />
                 <input
                     type="text"
-                    placeholder="Search by job number..."
+                    placeholder="Chercher une Commande..."
                     className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -130,16 +116,16 @@ const Dashboard = () => {
 
             {/* Chart */}
             <div className="bg-white p-6 rounded-lg shadow-lg mb-8 w-full">
-                <h2 className="text-xl font-semibold mb-6 text-center">Recent Jobs Progress</h2>
+                <h2 className="text-xl font-semibold mb-6 text-center">Progrès des Commandes Récentes</h2>
                 <div className="flex justify-center">
                     <BarChart width={800} height={300} data={jobs.slice(0, 10)}>
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="jobNumber" />
+                        <XAxis dataKey="JobNumber" />
                         <YAxis />
                         <Tooltip />
                         <Legend />
-                        <Bar dataKey="totalQuantity" fill="#8884d8" name="Total Quantity" />
-                        <Bar dataKey="totalScanned" fill="#82ca9d" name="Scanned" />
+                        <Bar dataKey="TotalQuantityJob" fill="#8884d8" name="Total" />
+                        <Bar dataKey="TotalScanned" fill="#82ca9d" name="Scanné" />
                     </BarChart>
                 </div>
             </div>
@@ -150,10 +136,10 @@ const Dashboard = () => {
                     <table className="w-full">
                         <thead className="bg-gray-50">
                             <tr>
-                                <th width="200" className="px-6 py-4 text-center-custom text-sm font-medium text-gray-700 uppercase">Part ID</th>
-                                <th width="80" className="px-6 py-4 text-center-custom text-sm font-medium text-gray-700 uppercase">Quantity</th>
-                                <th width="80" className="px-6 py-4 text-center-custom text-sm font-medium text-gray-700 uppercase">Scanned</th>
-                                <th width="180" className="px-6 py-4 text-center-custom text-sm font-medium text-gray-700 uppercase">Scan Date</th>
+                                <th width="200" className="px-6 py-4 text-center-custom text-sm font-medium text-gray-700 uppercase">Nom de la Pièce</th>
+                                <th width="80" className="px-6 py-4 text-center-custom text-sm font-medium text-gray-700 uppercase">Quantité</th>
+                                <th width="80" className="px-6 py-4 text-center-custom text-sm font-medium text-gray-700 uppercase">Scanné</th>
+                                <th width="180" className="px-6 py-4 text-center-custom text-sm font-medium text-gray-700 uppercase">Date de Scan</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
@@ -183,30 +169,31 @@ const Dashboard = () => {
                     <table className="min-w-full">
                         <thead className="bg-gray-50">
                             <tr>
-                                <th className="px-6 py-4 text-left text-sm font-medium text-gray-700 uppercase">Job Number</th>
-                                <th className="px-6 py-4 text-left text-sm font-medium text-gray-700 uppercase">Total Parts</th>
-                                <th className="px-6 py-4 text-left text-sm font-medium text-gray-700 uppercase">Progress</th>
-                                <th className="px-6 py-4 text-left text-sm font-medium text-gray-700 uppercase">Last Scan</th>
+                                <th className="px-6 py-4 text-left text-sm font-medium text-gray-700 uppercase">Numero de Commande</th>
+                                <th className="px-0 py-4 text-left text-sm font-medium text-gray-700 uppercase">Nombre de Pièces Uniques Scannées</th>
+                                <th className="px-6 py-4 text-left text-sm font-medium text-gray-700 uppercase">Progrès</th>
+                                <th className="px-6 py-4 text-left text-sm font-medium text-gray-700 uppercase">Dernier Scan</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
                             {jobs.map((job) => (
                                 <tr key={job.jobNumber}>
-                                    <td className="px-6 py-4 text-sm">{job.jobNumber}</td>
-                                    <td className="px-6 py-4 text-sm">{job.totalParts}</td>
+                                    <td className="px-6 py-4 text-sm">{job.JobNumber}</td>
+                                    <td className="px-6 py-4 text-sm">{job.TotalParts}</td>
+                                    {/*<td className="px-6 py-4 text-sm">{job.TotalParts} / {job.RealTotalParts}</td>*/}
                                     <td className="px-6 py-4">
                                         <div className="w-full bg-gray-200 rounded-full h-2.5">
                                             <div
                                                 className="bg-blue-600 h-2.5 rounded-full"
-                                                style={{ width: `${(job.totalScanned / job.totalQuantity * 100)}%` }}
+                                                style={{ width: `${(job.TotalScanned / job.TotalQuantityJob * 100)}%` }}
                                             ></div>
                                         </div>
                                         <span className="text-sm text-gray-500">
-                                            {job.totalScanned} / {job.totalQuantity}
+                                            {job.TotalScanned} / {job.TotalQuantityJob}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-sm">
-                                        {new Date(job.lastScanDate).toLocaleString()}
+                                        {new Date(job.LastScanDate).toLocaleString()}
                                     </td>
                                 </tr>
                             ))}
