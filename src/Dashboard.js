@@ -48,9 +48,9 @@ const Dashboard = () => {
             const response = await fetch(`${API_BASE_URL}/api/dashboard/jobs/${jobNumber}`);
 
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                setError("Numéro de commande introuvable !");
+                return;
             }
-
             const detailsData = await response.json();
             setSelectedJobDetails(detailsData);
             setJobs([{
@@ -61,10 +61,18 @@ const Dashboard = () => {
                 totalScanned: detailsData.reduce((sum, item) => sum + item.scannedQuantity, 0),
                 lastScanDate: detailsData[0]?.scanDate
             }]);
+            const handleSearch = () => {
+                const jobNumber = parseInt(searchTerm);
+                if (!isNaN(jobNumber)) {
+                    window.location.href = `http://192.168.88.55:3000/?jobNumber=${jobNumber}`;
+                }
+            };
             console.log("Détails du job reçus :", detailsData[0].partID);
         } catch (error) {
-            console.error('Error fetching job details:', error);
-            setError(error.message);
+            //console.error('Error fetching job details:', error);
+            //setError(error.message);
+            setError("Numéro de commande introuvable !");
+            return;
         } finally {
             setLoading(false);
         }
@@ -178,7 +186,10 @@ const Dashboard = () => {
                         <tbody className="divide-y divide-gray-200">
                             {jobs.map((job) => (
                                 <tr key={job.jobNumber}>
-                                    <td className="px-6 py-4 text-sm">{job.JobNumber}</td>
+                                    <td className="px-6 py-4 text-sm text-blue-500 cursor-pointer hover:underline"
+                                        onClick={() => window.location.href = `http://192.168.88.55:3000/?jobNumber=${job.JobNumber}`}>
+                                        {job.JobNumber}
+                                    </td>
                                     <td className="px-6 py-4 text-sm">{job.TotalParts}</td>
                                     {/*<td className="px-6 py-4 text-sm">{job.TotalParts} / {job.RealTotalParts}</td>*/}
                                     <td className="px-6 py-4">

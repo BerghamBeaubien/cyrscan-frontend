@@ -53,7 +53,8 @@ const ScanPage = () => {
                 partId,
                 quantity,
                 timestamp: new Date().toLocaleString(),
-                status: 'success'
+                status: 'success',
+                uniqueId: `${jobNumber}-${partId}-${Date.now()}`
             }]);
             setError('');
         } catch (err) {
@@ -63,12 +64,13 @@ const ScanPage = () => {
                 partId,
                 quantity,
                 timestamp: new Date().toLocaleString(),
-                status: 'error'
+                status: 'error',
+                uniqueId: `${jobNumber}-${partId}-${Date.now()}`
             }]);
         }
     };
 
-    const handleDeleteScan = async (jobNumber, partId) => {
+    const handleDeleteScan = async (uniqueId,jobNumber, partId) => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/Dashboard/delete`, {
                 method: 'DELETE',
@@ -82,8 +84,8 @@ const ScanPage = () => {
                 throw new Error('Erreur lors de la suppression');
             }
 
-            // Remove from UI
-            setScannedData(prev => prev.filter(scan => !(scan.jobNumber === jobNumber && scan.partId === partId)));
+            // Remove only the specific scan from UI
+            setScannedData(prev => prev.filter(scan => scan.uniqueId !== uniqueId));
         } catch (err) {
             setError(err.message);
         }
@@ -132,7 +134,7 @@ const ScanPage = () => {
                 )}
             </div>
 
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div className="bg-white rounded-lg shadow-lg overflow-x-auto">
                 <table className="min-w-full">
                     <thead className="bg-gray-50">
                         <tr>
@@ -145,8 +147,8 @@ const ScanPage = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                        {scannedData.map((scan, index) => (
-                            <tr key={index}>
+                        {scannedData.map((scan) => (
+                            <tr key={scan.uniqueId}>
                                 <td className="px-6 py-4 whitespace-nowrap">{scan.jobNumber}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">{scan.partId}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">{scan.quantity}</td>
@@ -157,7 +159,7 @@ const ScanPage = () => {
                                 {modificationMode && (
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <button
-                                            onClick={() => handleDeleteScan(scan.jobNumber, scan.partId)}
+                                            onClick={() => handleDeleteScan(scan.uniqueId, scan.jobNumber, scan.partId)}
                                             className="text-red-500 hover:text-red-700"
                                         >
                                             <Trash2 size={20} />
