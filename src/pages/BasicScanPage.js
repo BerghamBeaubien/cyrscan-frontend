@@ -1,17 +1,32 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { XCircle, Loader, QrCode } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import MobileQRScanner from './MobileQRScanner';
 
 const BasicScanPage = () => {
     const [error, setError] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [showQrScanner, setShowQrScanner] = useState(false);
     const inputRef = useRef(null);
-    const API_BASE_URL = 'http://192.168.88.55:5128';
     const navigate = useNavigate();
 
     let barcodeBuffer = '';
     let barcodeTimeout = null;
+
+    const formatQRCode = (qrCode) => {
+        if (!qrCode) return qrCode;
+
+        qrCode = qrCode.replace(/é/g, '-');
+        const parts = qrCode.split('-');
+        if (parts.length > 1) {
+            const lastPart = parts[parts.length - 1];
+            if (lastPart.length === 1 && /^[1-9]$/.test(lastPart)) {
+                parts[parts.length - 1] = `0${lastPart}`;
+            }
+        }
+        return parts.join('-');
+    };
 
     useEffect(() => {
         // Setup global event listener for barcode scanner
@@ -97,39 +112,31 @@ const BasicScanPage = () => {
                 scannedText = scannedText.substring(1, scannedText.length - 2);
             }
 
-            const normalizedText = scannedText.replace(/[/-]/g, '-');
-            const match = normalizedText.match(/^(\d+[A-Za-z0-9]*)-(.+)-(\d+)$/);
+            // Normalize text by replacing '/' and 'é' with '-'
+            const normalizedText = scannedText.replace(/[é/]/g, '-');
+
+            // Attempt to match full format [JobNumber]-[PartID]-[Sequence]
+            const match = normalizedText.match(/^([A-Za-z0-9]+)(?:-(.+)-(\d+))?$/);
 
             if (!match) {
-                setError('Format de code-barres invalide! Format attendu: [JobNumber]-[PartID]-[Sequence]');
+                setError('Format de code-barres invalide! Format attendu: [JobNumber]-[PartID]-[Sequence] ou simplement [JobNumber]');
                 setIsLoading(false);
                 setIsProcessing(false);
                 return;
             }
 
-            const [_, jobNumber, partId, sequence] = match;
-            const qrCode = normalizedText; // Le QR code est le texte entier scanné
+            const [_, jobNumber] = match;
 
-            // Create scan data with appropriate status
-            const scanData = {
-                jobNumber,
-                partId,
-                qrCode,
-                timestamp: new Date().toLocaleString(),
-                status: 'pending', // Will be updated on the job scan page
-                uniqueId: `${qrCode}-${Date.now()}`
-            };
-
-            // Navigate with the scan data
-            navigate(`/scan/${jobNumber}`, { state: { initialScan: scanData } });
-
+            // Navigate directly to jobNumber
+            navigate(`/scan/${jobNumber}`);
         } catch (err) {
-            // Create scan data with error status
             setError(err.message || 'Une erreur s\'est produite');
+        } finally {
             setIsLoading(false);
             setIsProcessing(false);
         }
     };
+
 
     // Loading overlay component
     const LoadingOverlay = () => (
@@ -155,7 +162,7 @@ const BasicScanPage = () => {
                     <h2 className="text-lg font-semibold text-blue-700 mb-2">Instructions:</h2>
                     <ol className="list-decimal pl-5 space-y-2 text-blue-800">
                         <li>Scannez n'importe quel code QR pour commencer</li>
-                        <li>Le format attendu est: <span className="font-mono bg-white px-2 py-0.5 rounded">JobNumber-PartID-Sequence</span></li>
+                        <li>Le format attendu est: <span className="font-mono bg-white px-2 py-0.5 rounded">NumeroJob-NumeroPièce-Sequence</span></li>
                         <li>Vous serez automatiquement redirigé vers la page de la commande correspondante</li>
                     </ol>
                 </div>
@@ -163,9 +170,12 @@ const BasicScanPage = () => {
                 <div className="mb-4 max-w-xl mx-auto">
                     <div className="relative">
                         <div className="flex items-center">
-                            <div className="bg-blue-100 p-2 rounded-l-lg border border-r-0 border-blue-300">
+                            <button
+                                className="bg-blue-100 p-2 rounded-l-lg border border-r-0 border-blue-300"
+                                onClick={() => setShowQrScanner(prev => !prev)}
+                            >
                                 <QrCode size={24} className="text-blue-500" />
-                            </div>
+                            </button>
                             <input
                                 ref={inputRef}
                                 type="text"
@@ -190,7 +200,30 @@ const BasicScanPage = () => {
                     </div>
                 )}
             </div>
+
+            {/* Camera Button */}
+            <div className="absolute top-0 right-0 mr-2 mt-2">
+                <button
+                    className="p-2 rounded-full bg-gray-200 hover:bg-gray-300"
+                    onClick={() => setShowQrScanner(prev => !prev)}
+                >
+                    <QrCode size={20} className="text-gray-600" />
+                </button>
+
+                {/* Import and use the new component */}
+                {showQrScanner && (
+                    <MobileQRScanner
+                        onScan={(scannedText) => {
+                            const formattedCode = formatQRCode(scannedText);
+                            processBarcode(formattedCode);
+                            setShowQrScanner(false);
+                        }}
+                        onClose={() => setShowQrScanner(false)}
+                    />
+                )}
+            </div>
         </div>
+
     );
 };
 

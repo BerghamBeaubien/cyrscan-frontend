@@ -11,7 +11,7 @@ const Dashboard = () => {
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
-    const API_BASE_URL = 'http://192.168.88.55:5128';
+    const API_BASE_URL = 'https://192.168.88.55:5128';
 
     const fetchAllData = async () => {
         try {
@@ -177,7 +177,7 @@ const Dashboard = () => {
             </div>
 
             {/* Jobs Table */}
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden w-full">
+            <div className="bg-white rounded-lg shadow-lg overflow-x-auto w-full">
                 <table className="min-w-full">
                     <thead className="bg-gray-50">
                         <tr>

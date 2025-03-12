@@ -1,6 +1,7 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import { XCircle, Trash2, ChevronDown, ChevronUp, Loader, QrCode, Package, Clipboard, ArrowLeft } from 'lucide-react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import MobileQRScanner from './MobileQRScanner';
 
 const JobScanPage = () => {
     const [scannedData, setScannedData] = useState([]);
@@ -11,9 +12,10 @@ const JobScanPage = () => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [showScannedData, setShowScannedData] = useState(true);
     const [showPalletTable, setShowPalletTable] = useState(true);
-    const [modificationMode, setModificationMode] = useState(false);
     const [modificationModePal, setModificationModePal] = useState(false);
+    const [deleteMode, setDeleteMode] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [showQrScanner, setShowQrScanner] = useState(false);
     const [pallets, setPallets] = useState([]);
     const [activePallet, setActivePallet] = useState(null);
     const [editingPallet, setEditingPallet] = useState(null);
@@ -23,10 +25,19 @@ const JobScanPage = () => {
     const [scanMode, setScanMode] = useState('scan'); // 'scan', 'manual'
     const [isScanReady, setIsScanReady] = useState(true);
     const inputRef = useRef(null);
-    const API_BASE_URL = 'http://192.168.88.55:5128';
+    const API_BASE_URL = 'https://192.168.88.55:5128';
     const { jobNumber } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
+    const [dimensionsModal, setDimensionsModal] = useState({
+        isOpen: false,
+        palletId: null,
+        palLong: '',
+        palLarg: '',
+        palHaut: '',
+        Notes: '',
+        palFinal: false
+    });
 
     let barcodeBuffer = '';
     let barcodeTimeout = null;
@@ -70,7 +81,6 @@ const JobScanPage = () => {
     useEffect(() => {
         const fetchContentsForAllPallets = async () => {
             const contentsMap = {};
-
             for (const pallet of pallets) {
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/Dashboard/palletContents/${pallet.id}`);
@@ -78,13 +88,22 @@ const JobScanPage = () => {
                         throw new Error(`Erreur lors du chargement du contenu de la palette ${pallet.name}`);
                     }
                     const contents = await response.json();
-                    contentsMap[pallet.id] = contents;
+
+                    // Parse contents with full QR code and pallet ID
+                    const parsedContents = contents.map(item => ({
+                        ...item,
+                        fullQrCode: item.qrCode, // Store the full QR code
+                        qrCode: item.qrCode?.split('-').pop(), // Short QR code for display
+                        palletId: pallet.id, // Add the pallet ID to each item
+                        scanDate: item.scanDate ? new Date(item.scanDate).toLocaleString() : 'N/A'
+                    }));
+
+                    contentsMap[pallet.id] = parsedContents;
                 } catch (err) {
                     console.error(`Failed to fetch contents for pallet ${pallet.id}:`, err);
                     contentsMap[pallet.id] = [];
                 }
             }
-
             setPalletContents(contentsMap);
         };
 
@@ -93,30 +112,23 @@ const JobScanPage = () => {
         }
     }, [pallets]);
 
-    const verifyActivePallet = () => {
-        // If no active pallet but we have pallets, select the first one
-        if (!activePallet && pallets.length > 0) {
-            console.log("Verifying active pallet: Auto-selecting first pallet");
-            setActivePallet(pallets[0]);
-            // Return true because we have pallets and now an active one
-            return true;
+    useEffect(() => {
+        // Setup global event listener for barcode scanner only if in scan mode
+        if (scanMode === 'scan') {
+            document.addEventListener('keydown', handleGlobalKeydown);
+            //console.log("Added keydown listener, active pallet:", activePallet ? activePallet.name : "null");
         }
 
-        // If no pallets at all, we can't proceed
-        if (pallets.length === 0) {
-            console.log("Verifying active pallet: No pallets available");
-            setError('Veuillez créer une palette avant de scanner des pièces');
-            return false;
-        }
-
-        // We have an active pallet
-        return true;
-    };
+        return () => {
+            document.removeEventListener('keydown', handleGlobalKeydown);
+        };
+    }, [jobNumber, scanMode, activePallet]); 
 
     // Format QR code to add a leading zero to single-digit sequence numbers
     const formatQRCode = (qrCode) => {
         if (!qrCode) return qrCode;
 
+        qrCode = qrCode.replace(/é/g, '-');
         const parts = qrCode.split('-');
         if (parts.length > 1) {
             const lastPart = parts[parts.length - 1];
@@ -145,6 +157,7 @@ const JobScanPage = () => {
             event.preventDefault();
             if (barcodeBuffer.trim()) {
                 const formattedCode = formatQRCode(barcodeBuffer.trim());
+                //console.log("Detected Enter key - Active pallet:", activePallet ? activePallet.name : "null", "Buffer:", barcodeBuffer);
                 processBarcode(formattedCode);
                 barcodeBuffer = '';
                 if (inputRef.current) {
@@ -168,6 +181,7 @@ const JobScanPage = () => {
             // If no more keys pressed in 50ms, assume barcode scan is complete
             if (barcodeBuffer.trim() && barcodeBuffer.includes('-')) {
                 const formattedCode = formatQRCode(barcodeBuffer.trim());
+                //console.log("Timeout triggered - Active pallet:", activePallet ? activePallet.name : "null", "Buffer:", barcodeBuffer);
                 processBarcode(formattedCode);
                 barcodeBuffer = '';
                 if (inputRef.current) {
@@ -186,27 +200,12 @@ const JobScanPage = () => {
             const data = await response.json();
             setPallets(data);
 
-            // More robust check for active pallet
+            //console.log("Fetched pallets:", data.length, "Active pallet:", activePallet ? activePallet.name : "null");
+
             // If there's at least one pallet and none is active, set the first one as active
-            if (data.length > 0) {
-                if (!activePallet) {
-                    console.log("Setting first pallet as active:", data[0]);
-                    setActivePallet(data[0]);
-                } else {
-                    // If we have an active pallet, make sure it still exists in the updated data
-                    const stillExists = data.some(p => p.id === activePallet.id);
-                    if (!stillExists) {
-                        console.log("Active pallet no longer exists, setting first pallet as active");
-                        setActivePallet(data[0]);
-                    } else {
-                        // Update the active pallet with fresh data to ensure it's current
-                        const updatedActivePallet = data.find(p => p.id === activePallet.id);
-                        if (updatedActivePallet && JSON.stringify(updatedActivePallet) !== JSON.stringify(activePallet)) {
-                            console.log("Updating active pallet with fresh data");
-                            setActivePallet(updatedActivePallet);
-                        }
-                    }
-                }
+            if (data.length > 0 && !activePallet) {
+                //console.log("Setting active pallet to first pallet:", data[0].name);
+                setActivePallet(data[0]);
             }
         } catch (err) {
             setError(err.message);
@@ -310,23 +309,25 @@ const JobScanPage = () => {
     const processBarcode = async (scannedText) => {
         if (isProcessing) return;
 
+        //console.log("Processing barcode:", scannedText, "Active pallet:", activePallet ? activePallet.name : "null");
         setIsProcessing(true);
         setError('');
         setIsScanReady(false);
 
-        // Only verify active pallet if none exists - don't display error here
-        const hasPallet = activePallet || (pallets.length > 0 && !activePallet);
-
-        if (!hasPallet && pallets.length === 0) {
+        // Check if pallets exist
+        if (pallets.length === 0) {
             setError('Veuillez créer une palette avant de scanner des pièces');
             setIsProcessing(false);
             setIsScanReady(true);
             return;
         }
 
-        // Set active pallet automatically if needed
-        if (!activePallet && pallets.length > 0) {
-            setActivePallet(pallets[0]);
+        // Ensure we have an active pallet
+        let currentActivePallet = activePallet;
+        if (!currentActivePallet) {
+            currentActivePallet = pallets[0];
+            setActivePallet(currentActivePallet);
+            //console.log("Setting default active pallet:", currentActivePallet.name);
         }
 
         try {
@@ -375,7 +376,7 @@ const JobScanPage = () => {
                     jobNumber: scannedJobNumber,
                     partId: partId,
                     qrCode: qrCode,
-                    palletId: activePallet.id
+                    palletId: currentActivePallet.id
                 })
             });
 
@@ -391,10 +392,7 @@ const JobScanPage = () => {
             const newScan = {
                 jobNumber: scannedJobNumber,
                 partId: partId,
-                qrCode: qrCode,
-                timestamp: new Date().toLocaleString(),
-                status: 'success',
-                uniqueId: `${qrCode}-${Date.now()}`
+                qrCode: qrCode
             };
 
             // Mettre à jour l'UI avec le nouveau scan
@@ -421,16 +419,11 @@ const JobScanPage = () => {
         }
     };
 
-    const handleDeleteScan = async (uniqueId, jobNumber, partId, qrCode, status) => {
-        // Si le statut est 'error', simplement supprimer de l'état local sans appel API
-        if (status === 'error') {
-            setScannedData(prev => prev.filter(scan => scan.uniqueId !== uniqueId));
-            return;
-        }
-
+    const handleDeleteScan = async (qrCode, palletId) => {
         if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce scan ?')) return;
 
-        // Sinon, faire l'appel API pour les scans réussis
+        console.log('Deleting scan:', qrCode, palletId);
+
         try {
             const response = await fetch(`${API_BASE_URL}/api/Dashboard/delete`, {
                 method: 'DELETE',
@@ -438,10 +431,8 @@ const JobScanPage = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    jobNumber,
-                    partId,
                     qrCode,
-                    palletId: activePallet.id
+                    palletId: palletId
                 })
             });
 
@@ -449,8 +440,9 @@ const JobScanPage = () => {
                 throw new Error('Erreur lors de la suppression');
             }
 
-            setScannedData(prev => prev.filter(scan => scan.uniqueId !== uniqueId));
-            await fetchPallets(); // Rafraîchir les données de palette
+            // Remove the scan from the local state
+            setScannedData(prev => prev.filter(scan => scan.qrCode !== qrCode));
+            await fetchPallets(); // Refresh pallet data
             setValidationMessage('Scan supprimé avec succès');
         } catch (err) {
             setError(err.message);
@@ -482,6 +474,41 @@ const JobScanPage = () => {
                 </div>
             </div>
         );
+    };
+
+    const createPackaging = async () => {
+        const { palletId, palLong, palLarg, palHaut, Notes, palFinal } = dimensionsModal;
+
+        if (!palLong || !palLarg || ! palHaut) {
+            setError('Veuillez saisir les dimensions de la palette');
+            return;
+        }
+
+        setIsProcessing(true);
+        setError('');
+
+        try {
+            setIsLoading(true)
+            setValidationMessage('Création de votre feuille d\'emballage en cours ...')
+
+            setDimensionsModal({ isOpen: false, palletId: null, palLong: '', palLarg: '', palHaut: '',Notes: '', palFinal: false });
+            const response = await fetch(`${API_BASE_URL}/api/Dashboard/packaging/${palletId}?palLong=${palLong}&palLarg=${palLarg}&palHaut=${palHaut}&Notes=${Notes}&palFinal=${palFinal}`, {
+                method: 'GET'
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || 'Erreur lors de la création du fichier d\'emballage');
+            }
+
+            setValidationMessage(`Fichier d'emballage créé: ${result.filePath}`);
+        } catch (err) {
+            setError(err.message);
+        }
+
+        setIsProcessing(false);
+        setIsLoading(false);
     };
 
     return (
@@ -543,11 +570,26 @@ const JobScanPage = () => {
                             </button>
                         </div>
 
-                        {/* Camera Button (Placeholder for future) */}
+                        {/* Camera Button */}
                         <div className="absolute top-0 right-0 mr-2 mt-2">
-                            <button className="p-2 rounded-full bg-gray-200 hover:bg-gray-300">
+                            <button
+                                className="p-2 rounded-full bg-gray-200 hover:bg-gray-300"
+                                onClick={() => setShowQrScanner(prev => !prev)}
+                            >
                                 <QrCode size={20} className="text-gray-600" />
                             </button>
+
+                            {/* Import and use the new component */}
+                            {showQrScanner && (
+                                <MobileQRScanner
+                                    onScan={(scannedText) => {
+                                        const formattedCode = formatQRCode(scannedText);
+                                        processBarcode(formattedCode);
+                                        setShowQrScanner(false);
+                                    }}
+                                    onClose={() => setShowQrScanner(false)}
+                                />
+                            )}
                         </div>
 
                         {/* Content Area */}
@@ -567,7 +609,7 @@ const JobScanPage = () => {
                                         ref={inputRef}
                                         type="text"
                                         className="opacity-0 h-0 w-0 absolute"
-                                        autoFocus
+                                        autoFocus={false}
                                         readOnly={!isScanReady}
                                     />
                                 </div>
@@ -711,16 +753,23 @@ const JobScanPage = () => {
                 </div>
             )}
 
-            {/* Pallet Contents Table */}
             {jobNumber && (
                 <div className="mb-4">
-                    <button
-                        onClick={() => setShowPalletTable(!showPalletTable)}
-                        className="flex items-center gap-2 text-lg font-semibold mb-2"
-                    >
-                        {showPalletTable ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                        Contenu des Palettes
-                    </button>
+                    <div className="flex items-center justify-between mb-2">
+                        <button
+                            onClick={() => setShowPalletTable(!showPalletTable)}
+                            className="flex items-center gap-2 text-lg font-semibold"
+                        >
+                            {showPalletTable ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                            Contenu des Palettes
+                        </button>
+                        <button
+                            onClick={() => setDeleteMode(!deleteMode)}
+                            className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-md text-sm"
+                        >
+                            {deleteMode ? 'Quitter Mode Édition' : 'Voir Details'}
+                        </button>
+                    </div>
 
                     {showPalletTable && (
                         <div className="bg-white rounded-lg shadow-lg p-4">
@@ -729,36 +778,54 @@ const JobScanPage = () => {
                                     {pallets.map(pallet => (
                                         <div key={pallet.id} className="min-w-64 flex-shrink-0">
                                             <div
-                                                className={`p-3 rounded-t-lg font-semibold text-center cursor-pointer ${activePallet?.id === pallet.id
-                                                        ? 'bg-blue-500 text-white'
-                                                        : 'bg-gray-200'
+                                                className={`p-3 rounded-t-lg font-semibold text-center cursor-pointer flex justify-between items-center ${activePallet?.id === pallet.id
+                                                    ? 'bg-blue-500 text-white'
+                                                    : 'bg-gray-200'
                                                     }`}
                                             >
-                                                {pallet.name} ({palletContents[pallet.id]?.length || 0})
+                                                <span>{pallet.name} ({palletContents[pallet.id]?.length || 0})</span>
+                                                <button
+                                                    onClick={() => setDimensionsModal({
+                                                        isOpen: true,
+                                                        palletId: pallet.id,
+                                                        palLong: '',
+                                                        palLarg: '',
+                                                        palHaut: '',
+                                                        Notes: '',
+                                                        palFinal: false
+                                                    })}
+                                                    className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded-md text-xs"
+                                                >
+                                                    Feuille Emballage
+                                                </button>
                                             </div>
                                             <div className="border border-gray-300 rounded-b-lg p-2 max-h-64 overflow-y-auto">
                                                 {palletContents[pallet.id] && palletContents[pallet.id].length > 0 ? (
                                                     <ul className="divide-y divide-gray-200">
                                                         {palletContents[pallet.id].map((item, index) => (
                                                             <li key={index} className="py-2 px-1 text-sm hover:bg-gray-50">
-                                                                <div className="font-medium">{item.partId}</div>
-                                                                <div className="text-xs text-gray-500 font-mono break-all">{item.qrCode}</div>
-                                                                <div className="text-xs text-gray-400">
-                                                                    {item.timestamp ? new Date(item.timestamp).toLocaleString() : 'Date invalide'}
+                                                                <div className="font-medium flex justify-between">
+                                                                    <span>{item.partId}</span>
+                                                                    <span className="text-sm text-gray-500">{item.qrCode}</span>
                                                                 </div>
-                                                                <button
-                                                                    onClick={() => handleDeleteScan(
-                                                                        `${item.qrCode}-${index}`,
-                                                                        item.jobNumber,
-                                                                        item.partId,
-                                                                        item.qrCode,
-                                                                        'success'
-                                                                    )}
-                                                                    className="text-red-600 hover:text-red-900"
-                                                                    title="Supprimer"
-                                                                >
-                                                                    <Trash2 size={18} />
-                                                                </button>
+                                                                {(deleteMode && showPalletTable) && (
+                                                                    <>
+                                                                        <div className="text-xs text-gray-500 font-mono break-all">{item.fullQrCode}</div>
+                                                                        <div className="text-xs text-gray-500 font-mono break-all">{item.scanDate}</div>
+                                                                    </>
+                                                                )}
+                                                                {deleteMode && (
+                                                                    <button
+                                                                        onClick={() => handleDeleteScan(
+                                                                            item.fullQrCode,
+                                                                            item.palletId
+                                                                        )}
+                                                                        className="text-red-600 hover:text-red-900"
+                                                                        title="Supprimer"
+                                                                    >
+                                                                        <Trash2 size={18} />
+                                                                    </button>
+                                                                )}
                                                             </li>
                                                         ))}
                                                     </ul>
@@ -782,6 +849,82 @@ const JobScanPage = () => {
                 </div>
             )}
 
+
+            {/* Pallet Dimensions Modal */}
+            {dimensionsModal.isOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+                        <h3 className="text-xl font-bold mb-4">Dimensions de la Palette</h3>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Longueur (po)</label>
+                            <input
+                                type="text"
+                                value={dimensionsModal.palLong}
+                                onChange={(e) => setDimensionsModal(prev => ({ ...prev, palLong: e.target.value }))}
+                                placeholder="Longueur de la palette"
+                                className="w-full p-2 border rounded"
+                                autoFocus
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Largeur (po)</label>
+                            <input
+                                type="text"
+                                value={dimensionsModal.palLarg}
+                                onChange={(e) => setDimensionsModal(prev => ({ ...prev, palLarg: e.target.value }))}
+                                placeholder="Largeur de la palette"
+                                className="w-full p-2 border rounded"
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Hauteur (po)</label>
+                            <input
+                                type="text"
+                                value={dimensionsModal.palHaut}
+                                onChange={(e) => setDimensionsModal(prev => ({ ...prev, palHaut: e.target.value }))}
+                                placeholder="Hauteur de la palette"
+                                className="w-full p-2 border rounded"
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                            <input
+                                type="text"
+                                value={dimensionsModal.Notes}
+                                onChange={(e) => setDimensionsModal(prev => ({ ...prev, Notes: e.target.value }))}
+                                placeholder="Notes spéciales"
+                                className="w-full p-2 border rounded"
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    checked={dimensionsModal.palFinal}
+                                    onChange={(e) => setDimensionsModal(prev => ({ ...prev, palFinal: e.target.checked }))}
+                                    className="mr-2"
+                                />
+                                <span className="text-sm text-gray-700">Palette Finale?</span>
+                            </label>
+                        </div>
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={() => setDimensionsModal({ isOpen: false, palletId: null, palLong: '', palLarg: '', palHaut: '', palFinal: false })}
+                                className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
+                            >
+                                Annuler
+                            </button>
+                            <button
+                                onClick={createPackaging}
+                                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            >
+                                Créer Emballage
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Recent Scans Table */}
             <div>
                 <div className="flex justify-between items-center mb-2">
@@ -791,14 +934,6 @@ const JobScanPage = () => {
                             <span className="ml-1">Scans Récents (Session)</span>
                         </div>
                     </h2>
-                    <div>
-                        <button
-                            onClick={() => setModificationMode(!modificationMode)}
-                            className="text-sm bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded"
-                        >
-                            {modificationMode ? 'Masquer Supprimer' : 'Gérer Scans'}
-                        </button>
-                    </div>
                 </div>
 
                 {showScannedData && (
@@ -808,22 +943,14 @@ const JobScanPage = () => {
                                 <thead className="bg-gray-50">
                                     <tr>
                                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Référence
+                                            Nom de la Pièce
                                         </th>
                                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Code QR
                                         </th>
                                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Heure
+                                            Numéro de Séquence
                                         </th>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Statut
-                                        </th>
-                                        {modificationMode && (
-                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Actions
-                                            </th>
-                                        )}
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
@@ -837,36 +964,13 @@ const JobScanPage = () => {
                                                     {scan.qrCode}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    {scan.timestamp}
+                                                    {scan.qrCode.split('-').pop()}
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                        ${scan.status === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                                        {scan.status === 'success' ? 'Succès' : 'Erreur'}
-                                                    </span>
-                                                </td>
-                                                {modificationMode && (
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                        <button
-                                                            onClick={() => handleDeleteScan(
-                                                                scan.uniqueId,
-                                                                scan.jobNumber,
-                                                                scan.partId,
-                                                                scan.qrCode,
-                                                                scan.status
-                                                            )}
-                                                            className="text-red-600 hover:text-red-900"
-                                                            title="Supprimer"
-                                                        >
-                                                            <Trash2 size={18} />
-                                                        </button>
-                                                    </td>
-                                                )}
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={modificationMode ? 5 : 4} className="px-6 py-4 text-center text-sm text-gray-500">
+                                            <td colSpan={4} className="px-6 py-4 text-center text-sm text-gray-500">
                                                 Aucun scan récent
                                             </td>
                                         </tr>
