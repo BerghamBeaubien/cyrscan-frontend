@@ -176,6 +176,21 @@ const BasicScanPage = () => {
                             >
                                 <QrCode size={24} className="text-blue-500" />
                             </button>
+
+                            {/* QR Scanner Component */}
+                            {showQrScanner && (
+                                <div className="fixed inset-0 z-50 bg-black bg-opacity-75 flex items-center justify-center">
+                                    <MobileQRScanner
+                                        onScan={(scannedText) => {
+                                            const formattedCode = formatQRCode(scannedText);
+                                            processBarcode(formattedCode);
+                                            setShowQrScanner(false);
+                                        }}
+                                        onClose={() => setShowQrScanner(false)}
+                                    />
+                                </div>
+                            )}
+
                             <input
                                 ref={inputRef}
                                 type="text"
@@ -198,28 +213,6 @@ const BasicScanPage = () => {
                             <XCircle size={20} />
                         </button>
                     </div>
-                )}
-            </div>
-
-            {/* Camera Button */}
-            <div className="absolute top-0 right-0 mr-2 mt-2">
-                <button
-                    className="p-2 rounded-full bg-gray-200 hover:bg-gray-300"
-                    onClick={() => setShowQrScanner(prev => !prev)}
-                >
-                    <QrCode size={20} className="text-gray-600" />
-                </button>
-
-                {/* Import and use the new component */}
-                {showQrScanner && (
-                    <MobileQRScanner
-                        onScan={(scannedText) => {
-                            const formattedCode = formatQRCode(scannedText);
-                            processBarcode(formattedCode);
-                            setShowQrScanner(false);
-                        }}
-                        onClose={() => setShowQrScanner(false)}
-                    />
                 )}
             </div>
         </div>

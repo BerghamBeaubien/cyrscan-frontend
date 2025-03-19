@@ -1,10 +1,12 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef, useContext } from 'react';
 import { XCircle, Trash2, ChevronDown, ChevronUp, Loader, QrCode, Package, Clipboard, ArrowLeft } from 'lucide-react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import MobileQRScanner from './MobileQRScanner';
+import { AuthContext } from '../components/AuthContext';
 
 const JobScanPage = () => {
     const [scannedData, setScannedData] = useState([]);
+    const { currentUser } = useContext(AuthContext);
     const [jobDetails, setJobDetails] = useState({
         jobNumber: ''
     });
@@ -314,7 +316,15 @@ const JobScanPage = () => {
         setError('');
         setIsScanReady(false);
 
-        // Check if pallets exist
+        // Vérifier si l'utilisateur est connecté
+        if (!currentUser) {
+            setError('Vous devez être connecté pour scanner des pièces');
+            setIsProcessing(false);
+            setIsScanReady(true);
+            return;
+        }
+
+        // Vérifier si les palettes existent
         if (pallets.length === 0) {
             setError('Veuillez créer une palette avant de scanner des pièces');
             setIsProcessing(false);
@@ -322,7 +332,7 @@ const JobScanPage = () => {
             return;
         }
 
-        // Ensure we have an active pallet
+        // S'assurer qu'il y a une palette active
         let currentActivePallet = activePallet;
         if (!currentActivePallet) {
             currentActivePallet = pallets[0];
@@ -331,12 +341,12 @@ const JobScanPage = () => {
         }
 
         try {
-            // Clean up the scanned text if it has asterisks
+            // Nettoyer le texte scanné s'il a des astérisques
             if (scannedText.startsWith("*") && scannedText.endsWith("*")) {
                 scannedText = scannedText.substring(1, scannedText.length - 1);
             }
 
-            // Normalize the text and check if it matches the expected format
+            // Normaliser le texte et vérifier s'il correspond au format attendu
             const normalizedText = scannedText.replace(/[/-]/g, '-');
             const match = normalizedText.match(/^(\d+[A-Za-z0-9]*)-(.+)-(\d+)$/);
 
@@ -366,11 +376,12 @@ const JobScanPage = () => {
             setIsLoading(true);
             setValidationMessage('Vérification en cours...');
 
-            // Envoyer les données de scan au serveur
+            // Envoyer les données de scan au serveur avec l'ID de l'utilisateur
             const response = await fetch(`${API_BASE_URL}/api/Dashboard/scan`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${currentUser.token}` // Si vous utilisez JWT
                 },
                 body: JSON.stringify({
                     jobNumber: scannedJobNumber,
@@ -422,6 +433,12 @@ const JobScanPage = () => {
     const handleDeleteScan = async (qrCode, palletId) => {
         if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce scan ?')) return;
 
+        // Vérifier si l'utilisateur est connecté
+        if (!currentUser) {
+            setError('Vous devez être connecté pour supprimer des scans');
+            return;
+        }
+
         console.log('Deleting scan:', qrCode, palletId);
 
         try {
@@ -429,6 +446,7 @@ const JobScanPage = () => {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${currentUser.token}` // Si vous utilisez JWT
                 },
                 body: JSON.stringify({
                     qrCode,
@@ -440,9 +458,9 @@ const JobScanPage = () => {
                 throw new Error('Erreur lors de la suppression');
             }
 
-            // Remove the scan from the local state
+            // Supprimer le scan de l'état local
             setScannedData(prev => prev.filter(scan => scan.qrCode !== qrCode));
-            await fetchPallets(); // Refresh pallet data
+            await fetchPallets(); // Rafraîchir les données des palettes
             setValidationMessage('Scan supprimé avec succès');
         } catch (err) {
             setError(err.message);
@@ -570,32 +588,34 @@ const JobScanPage = () => {
                             </button>
                         </div>
 
-                        {/* Camera Button */}
-                        <div className="absolute top-0 right-0 mr-2 mt-2">
-                            <button
-                                className="p-2 rounded-full bg-gray-200 hover:bg-gray-300"
-                                onClick={() => setShowQrScanner(prev => !prev)}
-                            >
-                                <QrCode size={20} className="text-gray-600" />
-                            </button>
-
-                            {/* Import and use the new component */}
-                            {showQrScanner && (
-                                <MobileQRScanner
-                                    onScan={(scannedText) => {
-                                        const formattedCode = formatQRCode(scannedText);
-                                        processBarcode(formattedCode);
-                                        setShowQrScanner(false);
-                                    }}
-                                    onClose={() => setShowQrScanner(false)}
-                                />
-                            )}
-                        </div>
-
                         {/* Content Area */}
                         <div className="p-4">
                             {scanMode === 'scan' ? (
-                                <div className="text-center">
+                                <div className="text-center relative">
+                                    {/* QR Scanner Button - Now on the left */}
+                                    <div className="relative">
+                                        <button
+                                            className="p-2 rounded-full bg-gray-200 hover:bg-gray-300"
+                                            onClick={() => setShowQrScanner(prev => !prev)}
+                                        >
+                                            <QrCode size={20} className="text-gray-600" />
+                                        </button>
+
+                                        {/* QR Scanner Component */}
+                                        {showQrScanner && (
+                                            <div className="fixed inset-0 z-50 bg-black bg-opacity-75 flex items-center justify-center">
+                                                <MobileQRScanner
+                                                    onScan={(scannedText) => {
+                                                        const formattedCode = formatQRCode(scannedText);
+                                                        processBarcode(formattedCode);
+                                                        setShowQrScanner(false);
+                                                    }}
+                                                    onClose={() => setShowQrScanner(false)}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+
                                     <div className="mb-3 flex items-center justify-center">
                                         <QrCode size={40} className="text-blue-500 mr-3" />
                                         {isScanReady ? (
