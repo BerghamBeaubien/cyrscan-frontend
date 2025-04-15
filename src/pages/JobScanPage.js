@@ -160,6 +160,7 @@ const JobScanPage = () => {
             if (barcodeBuffer.trim()) {
                 const formattedCode = formatQRCode(barcodeBuffer.trim());
                 //console.log("Detected Enter key - Active pallet:", activePallet ? activePallet.name : "null", "Buffer:", barcodeBuffer);
+                //console.log("Formatted code:", formattedCode);
                 processBarcode(formattedCode);
                 barcodeBuffer = '';
                 if (inputRef.current) {
@@ -170,7 +171,7 @@ const JobScanPage = () => {
         }
 
         // Append character to buffer
-        if (event.key.length === 1 || event.key === '-') {
+        if (event.key.length === 1 || event.key === '-' || event.key === '_') {
             barcodeBuffer += event.key;
             if (inputRef.current) {
                 inputRef.current.value = barcodeBuffer;
@@ -289,8 +290,9 @@ const JobScanPage = () => {
             const response = await fetch(`${API_BASE_URL}/api/Dashboard/pallets/${palletId}`, { method: 'DELETE' });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Erreur lors de la suppression de la palette');
+                //const errorData = await response.json();
+                throw new Error("Impossible de supprimer une palette qui n'est pas vide\nVeuillez" + 
+                "vider la palette, ou bien");
             }
 
             const palletToDelete = pallets.find(p => p.id === palletId);
@@ -501,6 +503,9 @@ const JobScanPage = () => {
             setError('Veuillez saisir les dimensions de la palette');
             return;
         }
+        console.log("Creating packaging for pallet:", palletId, palLong, palLarg, palHaut, Notes, palFinal);
+
+        const formattedNotes = Notes || '-';
 
         setIsProcessing(true);
         setError('');
@@ -508,9 +513,9 @@ const JobScanPage = () => {
         try {
             setIsLoading(true)
             setValidationMessage('Création de votre feuille d\'emballage en cours ...')
+            setDimensionsModal({ isOpen: false, palletId: null, palLong: '', palLarg: '', palHaut: '', Notes: '', palFinal: false });
 
-            setDimensionsModal({ isOpen: false, palletId: null, palLong: '', palLarg: '', palHaut: '',Notes: '', palFinal: false });
-            const response = await fetch(`${API_BASE_URL}/api/Dashboard/packaging/${palletId}?palLong=${palLong}&palLarg=${palLarg}&palHaut=${palHaut}&Notes=${Notes}&palFinal=${palFinal}`, {
+            const response = await fetch(`${API_BASE_URL}/api/Dashboard/packaging/${palletId}?palLong=${palLong}&palLarg=${palLarg}&palHaut=${palHaut}&Notes=${formattedNotes}&palFinal=${palFinal}`, {
                 method: 'GET'
             });
 
@@ -874,7 +879,7 @@ const JobScanPage = () => {
             {dimensionsModal.isOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-                        <h3 className="text-xl font-bold mb-4">Dimensions de la Palette</h3>
+                        <h3 className="text-xl font-bold mb-4">Formulaire Feuille d'Emballage</h3>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700 mb-1">Longueur (po)</label>
                             <input
@@ -929,7 +934,7 @@ const JobScanPage = () => {
                         </div>
                         <div className="flex justify-end gap-3">
                             <button
-                                onClick={() => setDimensionsModal({ isOpen: false, palletId: null, palLong: '', palLarg: '', palHaut: '', palFinal: false })}
+                                onClick={() => setDimensionsModal({ isOpen: false, palletId: null, palLong: '', palLarg: '', palHaut: '',Notes: '', palFinal: false })}
                                 className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
                             >
                                 Annuler

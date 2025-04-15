@@ -1,7 +1,10 @@
 {
   "ExpandedNodes": [
     "",
-    "\\src"
+    "\\src",
+    "\\src\\components",
+    "\\src\\pages"
   ],
+  "SelectedNode": "\\src\\components\\AdminPage.js",
   "PreviewInSolutionExplorer": false
 }

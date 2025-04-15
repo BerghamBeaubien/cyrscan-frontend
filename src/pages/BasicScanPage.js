@@ -162,8 +162,8 @@ const BasicScanPage = () => {
                     <h2 className="text-lg font-semibold text-blue-700 mb-2">Instructions:</h2>
                     <ol className="list-decimal pl-5 space-y-2 text-blue-800">
                         <li>Scannez n'importe quel code QR pour commencer</li>
-                        <li>Le format attendu est: <span className="font-mono bg-white px-2 py-0.5 rounded">NumeroJob-NumeroPièce-Sequence</span></li>
-                        <li>Vous serez automatiquement redirigé vers la page de la commande correspondante</li>
+                        <li>Le format attendu est: <span className="font-mono bg-white px-2 py-0.5 rounded">NumeroJob-NumeroPi&egrave;ce-Sequence</span></li>
+                        <li>Vous serez automatiquement redirig&eacute; vers la page de la commande correspondante</li>
                     </ol>
                 </div>
 

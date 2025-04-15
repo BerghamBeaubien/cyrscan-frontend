@@ -231,7 +231,7 @@ const AdminPage = () => {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Rôle
+                                    R&ocirc;le
                                 </label>
                                 <select
                                     className="w-full p-2 border rounded"
@@ -239,7 +239,7 @@ const AdminPage = () => {
                                     onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
                                 >
                                     <option value="User">Utilisateur</option>
-                                    <option value="Moderator">Modérateur</option>
+                                    <option value="Moderator">Mod&eacute;rateur</option>
                                     <option value="Admin">Administrateur</option>
                                 </select>
                             </div>
@@ -315,7 +315,7 @@ const AdminPage = () => {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Rôle
+                                    R&ocirc;le
                                 </label>
                                 <select
                                     className="w-full p-2 border rounded"
@@ -323,6 +323,7 @@ const AdminPage = () => {
                                     onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
                                 >
                                     <option value="User">Utilisateur</option>
+                                    <option value="Moderator">Mod&eacute;rateur</option>
                                     <option value="Admin">Administrateur</option>
                                 </select>
                             </div>
@@ -355,10 +356,10 @@ const AdminPage = () => {
                                 Utilisateur
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Rôle
+                                R&ocirc;le
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Dernière Connexion
+                                Derni&egrave;re Connexion
                             </th>
                             <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Actions
@@ -400,7 +401,7 @@ const AdminPage = () => {
                                             {user.role === 'Admin'
                                                 ? 'Administrateur'
                                                 : user.role === 'Moderator'
-                                                    ? 'Modérateur'
+                                                    ? 'Mod\u00E9rateur'
                                                     : 'Utilisateur'}
                                         </span>
                                     </td>

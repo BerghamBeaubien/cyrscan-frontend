@@ -449,6 +449,7 @@ const JobDetails = () => {
                                                                             <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">S&eacute;quence</th>
                                                                             <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Palette</th>
                                                                             <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Date de scan</th>
+                                                                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Scann&eacute; par</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody className="divide-y divide-gray-200 bg-white">
@@ -475,6 +476,9 @@ const JobDetails = () => {
                                                                                     </td>
                                                                                     <td className="px-4 py-2 whitespace-nowrap text-xs">
                                                                                         {new Date(detail.scanDate).toLocaleString()}
+                                                                                    </td>
+                                                                                    <td className="px-4 py-2 whitespace-nowrap text-xs">
+                                                                                        {detail.scannedByUser || "Inconnu"}
                                                                                     </td>
                                                                                 </tr>
                                                                             );

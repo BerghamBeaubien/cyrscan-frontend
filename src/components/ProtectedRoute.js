@@ -1,32 +1,26 @@
 import React, { useContext } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 
-// ProtectedRoute component to secure routes
 const ProtectedRoute = ({ children, requireAdmin = false, requireMod = false }) => {
-    const { currentUser, loading, isAdmin, isMod } = useContext(AuthContext);
-    const location = useLocation();
-
-    if (loading) {
-        return <div>Loading...</div>;
-    }
+    const { currentUser, isAdmin, isMod } = useContext(AuthContext);
 
     if (!currentUser) {
-        return <Navigate to="/login" state={{ from: location }} replace />;
+        return <Navigate to="/login" replace />;
     }
 
-    // Admin a accès à tout
-    if (isAdmin) {
-        return children;
+    // If route requires admin and user is not admin
+    if (requireAdmin && !isAdmin) {
+        return <Navigate to="/unauthorized" replace />;
     }
 
-    // Modérateur peut seulement accéder aux routes spécifiques
-    if (requireMod && isMod) {
-        return children;
+    // If route requires moderator and user is not mod or admin
+    if (requireMod && !(isAdmin || isMod)) {
+        return <Navigate to="/unauthorized" replace />;
     }
 
-    // Si l'utilisateur ne correspond pas aux conditions, on le bloque
-    return <Navigate to="/unauthorized" replace />;
+    // Otherwise, allow access
+    return children;
 };
 
 export default ProtectedRoute;

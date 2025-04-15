@@ -102,7 +102,7 @@ const DeletedScansPage = () => {
                     >
                         <ArrowLeft size={24} />
                     </button>
-                    Historique des Scans Supprim�s
+                    Historique des Scans Supprim&eacute;s
                 </h1>
             </div>
 
@@ -116,7 +116,7 @@ const DeletedScansPage = () => {
                         <input
                             id="jobNumberFilter"
                             type="text"
-                            placeholder="Entrez un num�ro de commande"
+                            placeholder="Entrez un numéro de commande"
                             value={jobNumberFilter}
                             onChange={(e) => setJobNumberFilter(e.target.value)}
                             className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
