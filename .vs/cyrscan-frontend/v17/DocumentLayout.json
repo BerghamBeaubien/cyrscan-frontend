@@ -3,32 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\pages\\JobScanPage.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\pages\\JobScanPage.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\pages\\JobScanPage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\pages\\JobScanPage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\components\\Header.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\components\\Header.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\components\\AdminPage.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\components\\AdminPage.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\mouad.khalladi\\cyrscan-frontend\\tailwind.config.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:tailwind.config.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\pages\\BasicScanPage.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\pages\\BasicScanPage.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\App.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\App.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\components\\AuthContext.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\components\\AuthContext.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     }
   ],
   "DocumentGroupContainers": [
@@ -38,79 +22,28 @@
       "DocumentGroups": [
         {
           "DockedWidth": 176,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": -1,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "AdminPage.js",
-              "DocumentMoniker": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\components\\AdminPage.js",
-              "RelativeDocumentMoniker": "src\\components\\AdminPage.js",
-              "ToolTip": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\components\\AdminPage.js",
-              "RelativeToolTip": "src\\components\\AdminPage.js",
-              "ViewState": "AgIAAGwBAAAAAAAAAAAowHYBAAAhAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2025-03-26T16:00:03.065Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "tailwind.config.js",
-              "DocumentMoniker": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\tailwind.config.js",
-              "RelativeDocumentMoniker": "tailwind.config.js",
-              "ToolTip": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\tailwind.config.js",
-              "RelativeToolTip": "tailwind.config.js",
-              "ViewState": "AgIAAAQAAAAAAAAAAAAmwA0AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2025-03-06T20:12:42.851Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "AuthContext.js",
-              "DocumentMoniker": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\components\\AuthContext.js",
-              "RelativeDocumentMoniker": "src\\components\\AuthContext.js",
-              "ToolTip": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\components\\AuthContext.js",
-              "RelativeToolTip": "src\\components\\AuthContext.js",
-              "ViewState": "AgIAACEAAAAAAAAAAAAAAEUAAAAIAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2025-03-13T18:16:18.49Z"
             }
           ]
         },
         {
           "DockedWidth": 224,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "BasicScanPage.js",
-              "DocumentMoniker": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\pages\\BasicScanPage.js",
-              "RelativeDocumentMoniker": "src\\pages\\BasicScanPage.js",
-              "ToolTip": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\pages\\BasicScanPage.js",
-              "RelativeToolTip": "src\\pages\\BasicScanPage.js",
-              "ViewState": "AgIAAJcAAAAAAAAAAAAAAKQAAACFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2025-02-24T23:55:05.756Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "JobScanPage.js",
-              "DocumentMoniker": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\pages\\JobScanPage.js",
-              "RelativeDocumentMoniker": "src\\pages\\JobScanPage.js",
-              "ToolTip": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\pages\\JobScanPage.js",
-              "RelativeToolTip": "src\\pages\\JobScanPage.js",
-              "ViewState": "AgIAAFMDAAAAAAAAAAAiwHEDAABVAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "Title": "JobScanPage.jsx",
+              "DocumentMoniker": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\pages\\JobScanPage.jsx",
+              "RelativeDocumentMoniker": "src\\pages\\JobScanPage.jsx",
+              "ToolTip": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\pages\\JobScanPage.jsx",
+              "RelativeToolTip": "src\\pages\\JobScanPage.jsx",
+              "ViewState": "AgIAAHsDAAAAAAAAAAAUwJIDAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
               "WhenOpened": "2025-03-13T20:31:35.477Z",
               "EditorCaption": ""
             },
@@ -124,21 +57,19 @@
               "RelativeToolTip": "src\\components\\Header.js",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2025-03-24T15:07:42.953Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-24T15:07:42.953Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 2,
               "Title": "App.js",
               "DocumentMoniker": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\App.js",
               "RelativeDocumentMoniker": "src\\App.js",
               "ToolTip": "C:\\Users\\mouad.khalladi\\cyrscan-frontend\\src\\App.js",
               "RelativeToolTip": "src\\App.js",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAvAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEwAAAATAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2025-02-19T17:51:06.156Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-02-19T17:51:06.156Z"
             }
           ]
         }

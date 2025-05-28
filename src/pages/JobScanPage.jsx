@@ -2,6 +2,7 @@
 import { XCircle, Trash2, ChevronDown, ChevronUp, Loader, QrCode, Package, Clipboard, ArrowLeft } from 'lucide-react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import MobileQRScanner from './MobileQRScanner';
+import EnhancedDimensionsModal from './EnhancedDimensionsModal';
 import { AuthContext } from '../components/AuthContext';
 
 const JobScanPage = () => {
@@ -496,28 +497,55 @@ const JobScanPage = () => {
         );
     };
 
-    const createPackaging = async () => {
+    const createPackaging = async (imageBlob = null) => {
         const { palletId, palLong, palLarg, palHaut, Notes, palFinal } = dimensionsModal;
 
-        if (!palLong || !palLarg || ! palHaut) {
+        if (!palLong || !palLarg || !palHaut) {
             setError('Veuillez saisir les dimensions de la palette');
             return;
         }
-        console.log("Creating packaging for pallet:", palletId, palLong, palLarg, palHaut, Notes, palFinal);
 
         const formattedNotes = Notes || '-';
-
         setIsProcessing(true);
         setError('');
 
         try {
-            setIsLoading(true)
-            setValidationMessage('Création de votre feuille d\'emballage en cours ...')
-            setDimensionsModal({ isOpen: false, palletId: null, palLong: '', palLarg: '', palHaut: '', Notes: '', palFinal: false });
-
-            const response = await fetch(`${API_BASE_URL}/api/Dashboard/packaging/${palletId}?palLong=${palLong}&palLarg=${palLarg}&palHaut=${palHaut}&Notes=${formattedNotes}&palFinal=${palFinal}`, {
-                method: 'GET'
+            setIsLoading(true);
+            setValidationMessage('Création de votre feuille d\'emballage en cours ...');
+            setDimensionsModal({
+                isOpen: false,
+                palletId: null,
+                palLong: '',
+                palLarg: '',
+                palHaut: '',
+                Notes: '',
+                palFinal: false
             });
+
+            let response;
+
+            if (imageBlob) {
+                // If we have an image, send it via FormData
+                const formData = new FormData();
+                formData.append('palletImage', imageBlob, `pallet_${palletId}_${Date.now()}.jpg`);
+                formData.append('palLong', palLong);
+                formData.append('palLarg', palLarg);
+                formData.append('palHaut', palHaut);
+                formData.append('Notes', formattedNotes);
+                formData.append('palFinal', palFinal.toString());
+
+                response = await fetch(`${API_BASE_URL}/api/Dashboard/packaging/${palletId}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                console.log("Sending image WITH FormData for pallet:", palletId);
+                console.log("FormData contents:", formData);
+            } else {
+                // No image, use the original GET request
+                response = await fetch(`${API_BASE_URL}/api/Dashboard/packaging/${palletId}?palLong=${palLong}&palLarg=${palLarg}&palHaut=${palHaut}&Notes=${formattedNotes}&palFinal=${palFinal}`, {
+                    method: 'GET'
+                });
+            }
 
             const result = await response.json();
 
@@ -875,79 +903,14 @@ const JobScanPage = () => {
             )}
 
 
-            {/* Pallet Dimensions Modal */}
+            {/* Enhanced Pallet Dimensions Modal with Photo Capture */}
             {dimensionsModal.isOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-                        <h3 className="text-xl font-bold mb-4">Formulaire Feuille d'Emballage</h3>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Longueur (po)</label>
-                            <input
-                                type="text"
-                                value={dimensionsModal.palLong}
-                                onChange={(e) => setDimensionsModal(prev => ({ ...prev, palLong: e.target.value }))}
-                                placeholder="Longueur de la palette"
-                                className="w-full p-2 border rounded"
-                                autoFocus
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Largeur (po)</label>
-                            <input
-                                type="text"
-                                value={dimensionsModal.palLarg}
-                                onChange={(e) => setDimensionsModal(prev => ({ ...prev, palLarg: e.target.value }))}
-                                placeholder="Largeur de la palette"
-                                className="w-full p-2 border rounded"
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Hauteur (po)</label>
-                            <input
-                                type="text"
-                                value={dimensionsModal.palHaut}
-                                onChange={(e) => setDimensionsModal(prev => ({ ...prev, palHaut: e.target.value }))}
-                                placeholder="Hauteur de la palette"
-                                className="w-full p-2 border rounded"
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-                            <input
-                                type="text"
-                                value={dimensionsModal.Notes}
-                                onChange={(e) => setDimensionsModal(prev => ({ ...prev, Notes: e.target.value }))}
-                                placeholder="Notes spéciales"
-                                className="w-full p-2 border rounded"
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label className="flex items-center">
-                                <input
-                                    type="checkbox"
-                                    checked={dimensionsModal.palFinal}
-                                    onChange={(e) => setDimensionsModal(prev => ({ ...prev, palFinal: e.target.checked }))}
-                                    className="mr-2"
-                                />
-                                <span className="text-sm text-gray-700">Palette Finale?</span>
-                            </label>
-                        </div>
-                        <div className="flex justify-end gap-3">
-                            <button
-                                onClick={() => setDimensionsModal({ isOpen: false, palletId: null, palLong: '', palLarg: '', palHaut: '',Notes: '', palFinal: false })}
-                                className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
-                            >
-                                Annuler
-                            </button>
-                            <button
-                                onClick={createPackaging}
-                                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                            >
-                                Créer Emballage
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <EnhancedDimensionsModal
+                    dimensionsModal={dimensionsModal}
+                    setDimensionsModal={setDimensionsModal}
+                    createPackaging={createPackaging}
+                    isProcessing={isProcessing}
+                />
             )}
 
             {/* Recent Scans Table */}
