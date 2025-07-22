@@ -125,7 +125,7 @@ const Dashboard = () => {
                 {[
                     { label: 'Total des Commandes', value: stats?.TotalJobs || 0, icon: <BarChart3 className="text-purple-500" size={24} /> },
                     { label: 'Étiquettes Scannées', value: stats?.TotalScannedItems || 0, icon: <QrCodeIcon className="text-green-500" size={24} /> },
-                    { label: 'Palettes Existantes', value: stats?.TotalPallets || 0, icon: <Package className="text-blue-500" size={24} /> }
+                    { label: "Palettes dans l'Entrepôt", value: stats?.TotalPallets || 0, icon: <Package className="text-blue-500" size={24} /> }
                 ].map((item, index) => (
                     <div key={index} className="bg-white p-6 rounded-lg shadow-lg text-center w-full max-w-xs">
                         <div className="flex justify-center mb-3">

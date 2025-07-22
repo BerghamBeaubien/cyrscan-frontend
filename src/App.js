@@ -12,6 +12,7 @@ import AdminPage from './components/AdminPage';
 import LoginPage from './components/LoginPage';
 import UnauthorizedPage from './components/UnauthorizedPage';
 import DeletedScansPage from './components/DeletedScansPage';
+import SpecialFunctions from './components/SpecialFunctions';
 
 function App() {
     return (
@@ -30,6 +31,14 @@ function App() {
                                 element={
                                     <ProtectedRoute>
                                         <BasicScanPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/special-functions"
+                                element={
+                                    <ProtectedRoute requireAdmin={true}>
+                                        <SpecialFunctions />
                                     </ProtectedRoute>
                                 }
                             />

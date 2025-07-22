@@ -29,6 +29,11 @@ const Header = () => {
                             </Link>
                         )}
                         {isAdmin && (
+                            <Link to="/special-functions" className="font-bold text-xl text-white">
+                                Fonctions Sp&eacute;ciales
+                            </Link>
+                        )}
+                        {isAdmin && (
                             <Link to="/admin" className="font-bold text-xl text-white">
                                 G&eacute;stion des utilisateurs
                             </Link>

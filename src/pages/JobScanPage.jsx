@@ -4,11 +4,16 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import MobileQRScanner from './MobileQRScanner';
 import EnhancedDimensionsModal from './EnhancedDimensionsModal';
 import { AuthContext } from '../components/AuthContext';
+import PalletContentsTable from '../components/PalletContentsTable';
 
 const JobScanPage = () => {
     const [scannedData, setScannedData] = useState([]);
     const { currentUser } = useContext(AuthContext);
     const [jobDetails, setJobDetails] = useState({
+        databaseParts: [],
+        excelParts: [],
+        scanDetails: {}, // New scan details structure
+        totalParts: 0,
         jobNumber: ''
     });
     const [error, setError] = useState('');
@@ -50,11 +55,14 @@ const JobScanPage = () => {
             try {
                 // Fetch pallets first
                 await fetchPallets();
+                const response = await fetch(`${API_BASE_URL}/api/dashboard/jobs/${jobNumber}/complete`);
 
-                // Set job details
-                setJobDetails({
-                    jobNumber
-                });
+                if (!response.ok) {
+                    throw new Error("Num&eacute;ro de commande introuvable!");
+                }
+
+                const data = await response.json();
+                setJobDetails(data);
 
                 // If there's an initial scan from redirect, handle it
                 if (location.state?.initialScan) {
@@ -125,7 +133,7 @@ const JobScanPage = () => {
         return () => {
             document.removeEventListener('keydown', handleGlobalKeydown);
         };
-    }, [jobNumber, scanMode, activePallet]); 
+    }, [jobNumber, scanMode, activePallet]);
 
     // Format QR code to add a leading zero to single-digit sequence numbers
     const formatQRCode = (qrCode) => {
@@ -202,14 +210,21 @@ const JobScanPage = () => {
                 throw new Error('Erreur lors du chargement des palettes');
             }
             const data = await response.json();
+            console.log("Fetched pallets:", data);
             setPallets(data);
 
-            //console.log("Fetched pallets:", data.length, "Active pallet:", activePallet ? activePallet.name : "null");
-
-            // If there's at least one pallet and none is active, set the first one as active
-            if (data.length > 0 && !activePallet) {
-                //console.log("Setting active pallet to first pallet:", data[0].name);
-                setActivePallet(data[0]);
+            // If active pallet is completed, try to find an active one or set to first incomplete
+            if (activePallet && activePallet.hasPackagingBeenGenerated) {
+                const incompletePallet = data.find(p => !p.hasPackagingBeenGenerated);
+                if (incompletePallet) {
+                    setActivePallet(incompletePallet);
+                } else if (data.length > 0) {
+                    setActivePallet(data[0]); // Keep current if all are complete
+                }
+            } else if (data.length > 0 && !activePallet) {
+                // Find first incomplete pallet or use first one
+                const firstIncomplete = data.find(p => !p.hasPackagingBeenGenerated) || data[0];
+                setActivePallet(firstIncomplete);
             }
         } catch (err) {
             setError(err.message);
@@ -292,8 +307,8 @@ const JobScanPage = () => {
 
             if (!response.ok) {
                 //const errorData = await response.json();
-                throw new Error("Impossible de supprimer une palette qui n'est pas vide\nVeuillez" + 
-                "vider la palette, ou bien");
+                throw new Error("Impossible de supprimer une palette qui n'est pas vide\nVeuillez" +
+                    "vider la palette, ou bien");
             }
 
             const palletToDelete = pallets.find(p => p.id === palletId);
@@ -341,6 +356,14 @@ const JobScanPage = () => {
             currentActivePallet = pallets[0];
             setActivePallet(currentActivePallet);
             //console.log("Setting default active pallet:", currentActivePallet.name);
+        }
+
+        // NEW: Check if the active pallet is completed
+        if (currentActivePallet && currentActivePallet.hasPackagingBeenGenerated) {
+            setError('Cette palette est complète et verrouillée. Veuillez sélectionner une autre palette ou en créer une nouvelle.');
+            setIsProcessing(false);
+            setIsScanReady(true);
+            return;
         }
 
         try {
@@ -433,6 +456,9 @@ const JobScanPage = () => {
         }
     };
 
+    const totalScanned = jobDetails.databaseParts?.reduce((sum, item) => sum + item.scannedCount, 0) || 0;
+    const totalExpected = jobDetails.totalParts || 0;
+
     const handleDeleteScan = async (qrCode, palletId) => {
         if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce scan ?')) return;
 
@@ -490,7 +516,7 @@ const JobScanPage = () => {
             <div className="bg-white p-4 rounded-lg shadow mb-4">
                 <h3 className="text-lg font-semibold mb-2">Commande {jobNumber}</h3>
                 <div className="flex justify-between text-sm">
-                    <span>Total pièces scannées: {totalScannedItems}</span>
+                    <span>Total pièces scannées: {totalScannedItems} sur {jobDetails.totalParts}</span>
                     <span>Nombre de palettes: {pallets.length}</span>
                 </div>
             </div>
@@ -502,7 +528,7 @@ const JobScanPage = () => {
 
         if (!palLong || !palLarg || !palHaut) {
             setError('Veuillez saisir les dimensions de la palette');
-            return;
+            return null; // Return null to indicate failure
         }
 
         const formattedNotes = Notes || '-';
@@ -539,7 +565,6 @@ const JobScanPage = () => {
                     body: formData
                 });
                 console.log("Sending image WITH FormData for pallet:", palletId);
-                console.log("FormData contents:", formData);
             } else {
                 // No image, use the original GET request
                 response = await fetch(`${API_BASE_URL}/api/Dashboard/packaging/${palletId}?palLong=${palLong}&palLarg=${palLarg}&palHaut=${palHaut}&Notes=${formattedNotes}&palFinal=${palFinal}`, {
@@ -554,12 +579,17 @@ const JobScanPage = () => {
             }
 
             setValidationMessage(`Fichier d'emballage créé: ${result.filePath}`);
-        } catch (err) {
-            setError(err.message);
-        }
 
-        setIsProcessing(false);
-        setIsLoading(false);
+            // Return the result to the caller
+            return result;
+        } catch (err) {
+            console.error('Error in createPackaging:', err);
+            setError(err.message);
+            return null; // Return null to indicate failure
+        } finally {
+            setIsProcessing(false);
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -806,101 +836,16 @@ const JobScanPage = () => {
                 </div>
             )}
 
-            {jobNumber && (
-                <div className="mb-4">
-                    <div className="flex items-center justify-between mb-2">
-                        <button
-                            onClick={() => setShowPalletTable(!showPalletTable)}
-                            className="flex items-center gap-2 text-lg font-semibold"
-                        >
-                            {showPalletTable ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                            Contenu des Palettes
-                        </button>
-                        <button
-                            onClick={() => setDeleteMode(!deleteMode)}
-                            className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-md text-sm"
-                        >
-                            {deleteMode ? 'Quitter Mode Édition' : 'Voir Details'}
-                        </button>
-                    </div>
-
-                    {showPalletTable && (
-                        <div className="bg-white rounded-lg shadow-lg p-4">
-                            <div className="overflow-x-auto">
-                                <div className="flex space-x-4 min-w-max">
-                                    {pallets.map(pallet => (
-                                        <div key={pallet.id} className="min-w-64 flex-shrink-0">
-                                            <div
-                                                className={`p-3 rounded-t-lg font-semibold text-center cursor-pointer flex justify-between items-center ${activePallet?.id === pallet.id
-                                                    ? 'bg-blue-500 text-white'
-                                                    : 'bg-gray-200'
-                                                    }`}
-                                            >
-                                                <span>{pallet.name} ({palletContents[pallet.id]?.length || 0})</span>
-                                                <button
-                                                    onClick={() => setDimensionsModal({
-                                                        isOpen: true,
-                                                        palletId: pallet.id,
-                                                        palLong: '',
-                                                        palLarg: '',
-                                                        palHaut: '',
-                                                        Notes: '',
-                                                        palFinal: false
-                                                    })}
-                                                    className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded-md text-xs"
-                                                >
-                                                    Feuille Emballage
-                                                </button>
-                                            </div>
-                                            <div className="border border-gray-300 rounded-b-lg p-2 max-h-64 overflow-y-auto">
-                                                {palletContents[pallet.id] && palletContents[pallet.id].length > 0 ? (
-                                                    <ul className="divide-y divide-gray-200">
-                                                        {palletContents[pallet.id].map((item, index) => (
-                                                            <li key={index} className="py-2 px-1 text-sm hover:bg-gray-50">
-                                                                <div className="font-medium flex justify-between">
-                                                                    <span>{item.partId}</span>
-                                                                    <span className="text-sm text-gray-500">{item.qrCode}</span>
-                                                                </div>
-                                                                {(deleteMode && showPalletTable) && (
-                                                                    <>
-                                                                        <div className="text-xs text-gray-500 font-mono break-all">{item.fullQrCode}</div>
-                                                                        <div className="text-xs text-gray-500 font-mono break-all">{item.scanDate}</div>
-                                                                    </>
-                                                                )}
-                                                                {deleteMode && (
-                                                                    <button
-                                                                        onClick={() => handleDeleteScan(
-                                                                            item.fullQrCode,
-                                                                            item.palletId
-                                                                        )}
-                                                                        className="text-red-600 hover:text-red-900"
-                                                                        title="Supprimer"
-                                                                    >
-                                                                        <Trash2 size={18} />
-                                                                    </button>
-                                                                )}
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                ) : (
-                                                    <div className="py-4 text-center text-gray-500 italic">
-                                                        Aucun élément scanné dans cette palette
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ))}
-                                    {pallets.length === 0 && (
-                                        <div className="w-full p-4 text-center text-gray-500">
-                                            Aucune palette disponible
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            )}
+            <PalletContentsTable
+                jobNumber={jobNumber}
+                pallets={pallets}
+                palletContents={palletContents}
+                activePallet={activePallet}
+                setActivePallet={setActivePallet}
+                setDimensionsModal={setDimensionsModal}
+                handleDeleteScan={handleDeleteScan}
+                API_BASE_URL={API_BASE_URL}
+            />
 
 
             {/* Enhanced Pallet Dimensions Modal with Photo Capture */}
@@ -910,6 +855,7 @@ const JobScanPage = () => {
                     setDimensionsModal={setDimensionsModal}
                     createPackaging={createPackaging}
                     isProcessing={isProcessing}
+                    isComplete={totalScanned >= totalExpected}
                 />
             )}
 
