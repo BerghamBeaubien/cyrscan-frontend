@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { ChevronUp, ChevronDown, Trash2, Eye, FileText, Image, Lock, CheckCircle, AlertTriangle, X, ExternalLink, Unlock } from 'lucide-react';
+import { ChevronUp, ChevronDown, Trash2, Eye, FileText, Image, CheckCircle, AlertTriangle, X, ExternalLink, Unlock } from 'lucide-react';
 import { AuthContext } from '../components/AuthContext';
 
 const PalletContentsTable = ({
@@ -22,10 +22,6 @@ const PalletContentsTable = ({
         imagePath: '',
         palletName: ''
     });
-
-    const isScanningDisabled = (pallet) => {
-        return pallet.hasPackagingBeenGenerated === true;
-    };
 
     const getPalletStatusInfo = (pallet) => {
         // Check for packaging generation status including 'True' with capital T

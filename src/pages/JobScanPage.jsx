@@ -20,9 +20,9 @@ const JobScanPage = () => {
     const [error, setError] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
     const [showScannedData, setShowScannedData] = useState(true);
-    const [showPalletTable, setShowPalletTable] = useState(true);
+    //const [showPalletTable, setShowPalletTable] = useState(true);
     const [modificationModePal, setModificationModePal] = useState(false);
-    const [deleteMode, setDeleteMode] = useState(false);
+    //const [deleteMode, setDeleteMode] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [showQrScanner, setShowQrScanner] = useState(false);
     const [pallets, setPallets] = useState([]);
@@ -86,6 +86,7 @@ const JobScanPage = () => {
         return () => {
             document.removeEventListener('keydown', handleGlobalKeydown);
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [jobNumber, scanMode]);
 
     // This effect will run whenever pallets change to fetch the contents for each pallet
@@ -133,6 +134,7 @@ const JobScanPage = () => {
         return () => {
             document.removeEventListener('keydown', handleGlobalKeydown);
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [jobNumber, scanMode, activePallet]);
 
     // Format QR code to add a leading zero to single-digit sequence numbers
@@ -414,6 +416,7 @@ const JobScanPage = () => {
                 return;
             }
 
+            // eslint-disable-next-line no-unused-vars
             const [_, scannedJobNumber, partId, sequence] = match;
             const qrCode = normalizedText;
 

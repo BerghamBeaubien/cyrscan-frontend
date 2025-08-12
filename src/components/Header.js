@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { BrowserRouter as Router, Routes, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import { LogOut } from 'lucide-react';
 

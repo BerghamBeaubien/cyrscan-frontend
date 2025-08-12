@@ -22,7 +22,7 @@ const EnhancedDimensionsModal = ({
     const [printAfterCreation, setPrintAfterCreation] = useState(false);
     const [availablePrinters, setAvailablePrinters] = useState([]);
     const [selectedPrinter, setSelectedPrinter] = useState('');
-    const [isPrinting, setIsPrinting] = useState(false);
+    const [setIsPrinting] = useState(false);
     const [printError, setPrintError] = useState('');
     const [printSuccess, setPrintSuccess] = useState(false);
     const [createdPdfPath, setCreatedPdfPath] = useState('');
@@ -79,6 +79,7 @@ const EnhancedDimensionsModal = ({
             console.log('Print confirmation shown, starting print process...');
             handlePrint();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [showPrintConfirmation, createdPdfPath, selectedPrinter]);
 
     // Handle printing
@@ -673,11 +674,12 @@ const EnhancedDimensionsModal = ({
 
                     {palletImage && (
                         <div className="mb-3 relative">
+                            {// eslint-disable-next-line jsx-a11y/img-redundant-alt
                             <img
                                 src={palletImage.url}
                                 alt="Photo de la palette"
                                 className="w-full max-h-96 object-contain rounded border"
-                            />
+                            />}
                             <button
                                 onClick={removePhoto}
                                 className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"

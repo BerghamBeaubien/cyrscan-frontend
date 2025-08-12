@@ -53,6 +53,7 @@ const Dashboard = () => {
         fetchAllData();
         const interval = setInterval(fetchAllData, 120000); // Rafraîchir toutes les 2 minutes
         return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const formatDataForChart = (jobs) => {

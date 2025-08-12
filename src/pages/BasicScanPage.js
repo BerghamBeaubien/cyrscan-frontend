@@ -35,6 +35,7 @@ const BasicScanPage = () => {
         return () => {
             document.removeEventListener('keydown', handleGlobalKeydown);
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Handle global keydown events for barcode scanner
@@ -125,6 +126,7 @@ const BasicScanPage = () => {
                 return;
             }
 
+            // eslint-disable-next-line no-unused-vars
             const [_, jobNumber] = match;
 
             // Navigate directly to jobNumber

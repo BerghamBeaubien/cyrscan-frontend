@@ -9,7 +9,7 @@ const DeletedScansPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(20);
+    const [pageSize] = useState(20);
     const [totalPages, setTotalPages] = useState(1);
     const [jobNumberFilter, setJobNumberFilter] = useState('');
     const [appliedFilter, setAppliedFilter] = useState('');

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Search, ArrowLeft, QrCode, Package, Clipboard, Download } from 'lucide-react';
+import { Search, ArrowLeft, QrCode} from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { API_BASE_URL } from '../config';
 

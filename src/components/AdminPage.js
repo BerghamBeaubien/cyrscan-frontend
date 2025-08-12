@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Loader, User, UserPlus, Trash2, RefreshCcw, CheckCircle, XCircle, Edit } from 'lucide-react';
+import { Loader, User, UserPlus, Trash2, RefreshCcw, XCircle, Edit } from 'lucide-react';
 import { API_BASE_URL } from '../config';
 
 const AdminPage = () => {
