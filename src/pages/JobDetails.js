@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Search, ArrowLeft, QrCode, Package, Clipboard, Download } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { API_BASE_URL } from '../config';
 
 // Define Loader component properly
 const Loader = ({ size = 24, className = "" }) => (
@@ -43,7 +44,6 @@ const JobDetails = () => {
     const [hoveredSequence, setHoveredSequence] = useState(null);
     const { jobNumber } = useParams();
     const navigate = useNavigate();
-    const API_BASE_URL = 'https://192.168.88.55:5128';
 
     useEffect(() => {
         const fetchJobDetails = async () => {

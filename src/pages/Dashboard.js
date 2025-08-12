@@ -2,6 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Search, BarChart3, RefreshCw, Package } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { API_BASE_URL } from '../config';
 
 const Dashboard = () => {
     const [jobs, setJobs] = useState([]);
@@ -11,7 +12,7 @@ const Dashboard = () => {
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
-    const API_BASE_URL = 'https://192.168.88.55:5128';
+    //const API_BASE_URL = 'https://192.168.88.55:5128';
 
     const fetchAllData = async () => {
         try {

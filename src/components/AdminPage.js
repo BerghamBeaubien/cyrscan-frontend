@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Loader, User, UserPlus, Trash2, RefreshCcw, CheckCircle, XCircle, Edit } from 'lucide-react';
+import { API_BASE_URL } from '../config';
 
 const AdminPage = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const API_BASE_URL = 'https://192.168.88.55:5128';
     const [showAddUser, setShowAddUser] = useState(false);
     const [showEditUser, setShowEditUser] = useState(false);
     const [newUser, setNewUser] = useState({

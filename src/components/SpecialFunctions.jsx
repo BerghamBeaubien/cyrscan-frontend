@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { ArrowLeft, RefreshCw, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import { API_BASE_URL } from '../config';
 
 const SpecialFunctions = () => {
     const [recomputeJobNumber, setRecomputeJobNumber] = useState('');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
     const navigate = { navigate: () => console.log('Navigate to home') };
-    const API_BASE_URL = 'https://192.168.88.55:5128';
 
     const handleRecomputeTotalQuantity = async () => {
         if (!recomputeJobNumber.trim()) {

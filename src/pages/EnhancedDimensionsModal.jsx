@@ -1,6 +1,7 @@
 ﻿import React, { useState, useRef, useEffect, useContext } from 'react';
 import { Camera, X, Package, RotateCw, Loader, Printer, Check } from 'lucide-react';
 import { AuthContext } from '../components/AuthContext';
+import { API_BASE_URL } from '../config';
 
 const EnhancedDimensionsModal = ({
     dimensionsModal,
@@ -18,7 +19,6 @@ const EnhancedDimensionsModal = ({
     const [facingMode, setFacingMode] = useState("environment");
 
     // Print-related state
-    const API_BASE_URL = 'https://192.168.88.55:5128';
     const [printAfterCreation, setPrintAfterCreation] = useState(false);
     const [availablePrinters, setAvailablePrinters] = useState([]);
     const [selectedPrinter, setSelectedPrinter] = useState('');

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { XCircle, Loader, ArrowLeft } from 'lucide-react';
+import { API_BASE_URL } from '../config';
 
 const ScanDetailPage = () => {
     const { jobNumber } = useParams();
@@ -8,7 +9,6 @@ const ScanDetailPage = () => {
     const [scannedTags, setScannedTags] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const API_BASE_URL = 'https://192.168.88.55:5128';
 
     useEffect(() => {
         const fetchJobDetails = async () => {

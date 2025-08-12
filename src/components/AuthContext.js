@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
+import { API_BASE_URL } from '../config';
 
 // Create the authentication context
 export const AuthContext = createContext();
@@ -6,7 +7,6 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    const API_BASE_URL = 'https://192.168.88.55:5128';
 
     useEffect(() => {
         // Check if there's a user stored in localStorage on component mount

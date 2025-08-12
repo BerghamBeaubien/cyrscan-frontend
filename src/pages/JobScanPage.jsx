@@ -5,6 +5,7 @@ import MobileQRScanner from './MobileQRScanner';
 import EnhancedDimensionsModal from './EnhancedDimensionsModal';
 import { AuthContext } from '../components/AuthContext';
 import PalletContentsTable from '../components/PalletContentsTable';
+import { API_BASE_URL } from '../config';
 
 const JobScanPage = () => {
     const [scannedData, setScannedData] = useState([]);
@@ -33,7 +34,6 @@ const JobScanPage = () => {
     const [scanMode, setScanMode] = useState('scan'); // 'scan', 'manual'
     const [isScanReady, setIsScanReady] = useState(true);
     const inputRef = useRef(null);
-    const API_BASE_URL = 'https://192.168.88.55:5128';
     const { jobNumber } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
@@ -329,12 +329,11 @@ const JobScanPage = () => {
     const processBarcode = async (scannedText) => {
         if (isProcessing) return;
 
-        //console.log("Processing barcode:", scannedText, "Active pallet:", activePallet ? activePallet.name : "null");
         setIsProcessing(true);
         setError('');
         setIsScanReady(false);
 
-        // Vérifier si l'utilisateur est connecté
+        // Vérification : l'utilisateur doit être connecté
         if (!currentUser) {
             setError('Vous devez être connecté pour scanner des pièces');
             setIsProcessing(false);
@@ -342,7 +341,7 @@ const JobScanPage = () => {
             return;
         }
 
-        // Vérifier si les palettes existent
+        // Vérification : au moins une palette doit exister
         if (pallets.length === 0) {
             setError('Veuillez créer une palette avant de scanner des pièces');
             setIsProcessing(false);
@@ -350,43 +349,75 @@ const JobScanPage = () => {
             return;
         }
 
-        // S'assurer qu'il y a une palette active
+        // Utiliser la palette active, ou sélectionner la première si aucune n'est active
         let currentActivePallet = activePallet;
         if (!currentActivePallet) {
             currentActivePallet = pallets[0];
             setActivePallet(currentActivePallet);
-            //console.log("Setting default active pallet:", currentActivePallet.name);
         }
 
-        // NEW: Check if the active pallet is completed
-        if (currentActivePallet && currentActivePallet.hasPackagingBeenGenerated) {
-            setError('Cette palette est complète et verrouillée. Veuillez sélectionner une autre palette ou en créer une nouvelle.');
+        // DEBUG : afficher les infos de la palette active pour mieux comprendre les erreurs
+        console.log('=== INFOS DEBUG PALETTE ===');
+        console.log('Palette :', currentActivePallet);
+        console.log('hasPackagingBeenGenerated :', currentActivePallet.hasPackagingBeenGenerated, typeof currentActivePallet.hasPackagingBeenGenerated);
+        console.log('HasPackagingBeenGenerated :', currentActivePallet.HasPackagingBeenGenerated, typeof currentActivePallet.HasPackagingBeenGenerated);
+        console.log('packagingPdfPath :', currentActivePallet.packagingPdfPath);
+        console.log('PackagingPdfPath :', currentActivePallet.PackagingPdfPath);
+        console.log('packagingImagePath :', currentActivePallet.packagingImagePath);
+        console.log('PackagingImagePath :', currentActivePallet.PackagingImagePath);
+        console.log('===========================');
+
+        // Vérification avancée : est-ce que la palette est vraiment complétée ?
+        const hasPackagingFlag =
+            currentActivePallet.hasPackagingBeenGenerated === true ||
+            currentActivePallet.HasPackagingBeenGenerated === true ||
+            currentActivePallet.hasPackagingBeenGenerated === 'true' ||
+            currentActivePallet.HasPackagingBeenGenerated === 'true' ||
+            currentActivePallet.hasPackagingBeenGenerated === 'True' ||
+            currentActivePallet.HasPackagingBeenGenerated === 'True';
+
+        const hasPdfPath = !!(currentActivePallet.packagingPdfPath || currentActivePallet.PackagingPdfPath || currentActivePallet.pdfPath);
+        const hasImagePath = !!(currentActivePallet.packagingImagePath || currentActivePallet.PackagingImagePath || currentActivePallet.imagePath);
+
+        // Palette considérée comme complétée uniquement si le flag est actif ET qu'au moins un fichier est présent
+        const isReallyCompleted = hasPackagingFlag && (hasPdfPath || hasImagePath);
+
+        console.log(`Palette ${currentActivePallet.name} - hasPackagingFlag : ${hasPackagingFlag}, hasPdfPath : ${hasPdfPath}, hasImagePath : ${hasImagePath}, isReallyCompleted : ${isReallyCompleted}`);
+
+        if (isReallyCompleted) {
+            setError(`Cette palette (${currentActivePallet.name}) est complète et verrouillée. Veuillez sélectionner une autre palette ou en créer une nouvelle.`);
             setIsProcessing(false);
             setIsScanReady(true);
             return;
         }
 
+        // Bypass temporaire : autoriser le scan sur une palette spécifique même si le flag est actif mais sans fichiers
+        if (currentActivePallet.id === 'PROBLEMATIC_PALLET_ID' && hasPackagingFlag && !hasPdfPath && !hasImagePath) {
+            console.warn(`Contournement : autorisation temporaire du scan pour la palette ${currentActivePallet.name} (flag sans fichiers)`);
+            // Le traitement continue normalement
+        }
+
         try {
-            // Nettoyer le texte scanné s'il a des astérisques
+            // Nettoyer le texte s'il commence/termine par un astérisque
             if (scannedText.startsWith("*") && scannedText.endsWith("*")) {
                 scannedText = scannedText.substring(1, scannedText.length - 1);
             }
 
-            // Normaliser le texte et vérifier s'il correspond au format attendu
+            // Normaliser le texte (remplacer slash et tirets) et le valider
             const normalizedText = scannedText.replace(/[/-]/g, '-');
             const match = normalizedText.match(/^(\d+[A-Za-z0-9]*)-(.+)-(\d+)$/);
 
             if (!match) {
-                setError('Format de code-barres invalide! Format attendu: [JobNumber]-[PartID]-[Sequence]');
+                setError('Format de code-barres invalide ! Format attendu : [JobNumber]-[PartID]-[Sequence]');
                 setIsProcessing(false);
                 setIsScanReady(true);
                 return;
             }
 
             const [_, scannedJobNumber, partId, sequence] = match;
-            const qrCode = normalizedText; // Le QR code est le texte entier scanné
+            const qrCode = normalizedText;
 
-            // Si le numéro de commande scanné est différent du numéro de commande actuel, rediriger
+            // Si le numéro de commande scanné est différent, redirection
             if (scannedJobNumber !== jobNumber) {
                 setIsLoading(true);
                 setValidationMessage(`Redirection vers la commande ${scannedJobNumber}...`);
@@ -402,12 +433,12 @@ const JobScanPage = () => {
             setIsLoading(true);
             setValidationMessage('Vérification en cours...');
 
-            // Envoyer les données de scan au serveur avec l'ID de l'utilisateur
+            // Envoyer les données au backend avec l'identifiant utilisateur
             const response = await fetch(`${API_BASE_URL}/api/Dashboard/scan`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${currentUser.token}` // Si vous utilisez JWT
+                    'Authorization': `Bearer ${currentUser.token}`
                 },
                 body: JSON.stringify({
                     jobNumber: scannedJobNumber,
@@ -417,36 +448,32 @@ const JobScanPage = () => {
                 })
             });
 
-            // Obtenir les données de réponse indépendamment du succès/échec
             const responseData = await response.json();
 
             if (!response.ok) {
-                // Gérer l'erreur de validation du backend
                 throw new Error(responseData.message || 'Erreur lors de l\'enregistrement');
             }
 
-            // Créer un nouvel enregistrement de scan pour l'UI
+            // Ajouter le nouveau scan à l'interface utilisateur
             const newScan = {
                 jobNumber: scannedJobNumber,
                 partId: partId,
                 qrCode: qrCode
             };
 
-            // Mettre à jour l'UI avec le nouveau scan
             setScannedData(prev => [newScan, ...prev]);
             setShowScannedData(true);
             setValidationMessage(responseData.message || 'Scan enregistré avec succès');
 
-            // Rafraîchir les données
+            // Rafraîchir les données des palettes
             await fetchPallets();
         } catch (err) {
-            console.error("Scan error:", err);
+            console.error("Erreur lors du scan :", err);
             setError(err.message || 'Une erreur s\'est produite');
         } finally {
-            // Masquer l'écran de chargement après un court délai
+            // Délai d'affichage du message avant réinitialisation
             setTimeout(() => {
                 setIsLoading(false);
-                // Effacer le message de validation après quelques secondes
                 setTimeout(() => {
                     setValidationMessage('');
                 }, 3000);

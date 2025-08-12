@@ -2,9 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Loader, Filter, ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 import { AuthContext } from './AuthContext';
-
-// Constante pour l'URL de l'API
-const API_BASE_URL = 'https://192.168.88.55:5128';
+import { API_BASE_URL } from '../config';
 
 const DeletedScansPage = () => {
     const [deletedScans, setDeletedScans] = useState([]);
