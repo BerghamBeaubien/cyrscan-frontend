@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect, useContext } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { Camera, X, Package, RotateCw, Loader, Printer, Check } from 'lucide-react';
 import { AuthContext } from '../components/AuthContext';
 import { API_BASE_URL } from '../config';

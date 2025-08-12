@@ -1,0 +1,7 @@
+name = "cyrscan-frontend"  # Your Worker name
+main = "worker.js"         # Entry file for Worker
+compatibility_date = "2024-01-01"
+
+[site]
+bucket = "./build"         # Your React build directory
+entry-point = "."

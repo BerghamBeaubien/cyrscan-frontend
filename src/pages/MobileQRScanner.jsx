@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { XCircle, Loader } from 'lucide-react';
 import QrReader from 'react-qr-scanner';
 

@@ -1,4 +1,4 @@
-﻿import React, { useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { ChevronUp, ChevronDown, Trash2, Eye, FileText, Image, Lock, CheckCircle, AlertTriangle, X, ExternalLink, Unlock } from 'lucide-react';
 import { AuthContext } from '../components/AuthContext';
 
