@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
-import { BrowserRouter as Link, useNavigate } from 'react-router-dom';
+﻿import React, { useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import { LogOut } from 'lucide-react';
 
@@ -58,7 +58,7 @@ const Header = () => {
                                 <button
                                     className="bg-gray-700 rounded-full p-2 hover:bg-gray-600 transition-colors"
                                     onClick={handleLogout}
-                                    title="D�connexion"
+                                    title="Déconnexion"
                                 >
                                     <LogOut size={20} className="text-gray-300" />
                                 </button>
